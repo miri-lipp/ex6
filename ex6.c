@@ -386,9 +386,8 @@ void openPokedexMenu(void) {
         ownerHead->next = NULL; //next node is null to know when the linked list ends
         //add data to root of binary tree
         //HOW? i have an array of pokemon data so i need to add pokemondata[] to data struct. da fuck?
-        ownerHead->pokedexRoot = node; //am i right?
-        node = StarterPokemon(node);
-        printf("New Pokedex created for %s with starter %s.\n",ownerHead->ownerName, node->data->name);
+        ownerHead->pokedexRoot = StarterPokemon(node);
+        printf("New Pokedex created for %s with starter %s.\n",ownerHead->ownerName, ownerHead->pokedexRoot->data->name);
     }
     else { //same thing but when linked list is not empty
         OwnerNode *current = ownerHead;
@@ -401,7 +400,7 @@ void openPokedexMenu(void) {
         current->next = owner; //next in line
         owner->prev = current; //previous becomes current
         owner->pokedexRoot = StarterPokemon(node); //initializing binqry tree. i hope
-        printf("New Pokedex created for %s with starter %s.\n",owner->ownerName, node->data->name);
+        printf("New Pokedex created for %s with starter %s.\n",owner->ownerName, owner->pokedexRoot->data->name);
     }
 }
 
@@ -459,18 +458,22 @@ void addPokemon(OwnerNode *owner) {
         printf("Invalid ID.\n");
         return;
     }
+    //printf("Current Node ID: %d, Inserting Pokemon ID: %d\n", owner->pokedexRoot->data->id, pokemonId);
     owner->pokedexRoot = insertPokemonNode(owner->pokedexRoot, pokemonId);
+    //printf("Pokemon %s (ID %d) added.\n", owner->pokedexRoot->data->name, pokemonId);
 }
 
 PokemonNode *insertPokemonNode(PokemonNode *newNode, int pokemonId) {
     if (newNode == NULL) {
         //if tree empty return node
-        printf("Tree is empty. Creating new node for Pokemon ID: %d\n", pokemonId);
-        printf("Pokemon ID %d added to the Pokedex.\n", pokemonId);
-        return createPokemonNode(&pokedex[pokemonId - 1]);
+        // printf("Tree is empty. Creating new node for Pokemon ID: %d\n", pokemonId);
+        // printf("Pokemon ID %d added to the Pokedex.\n", pokemonId);
+        PokemonNode *node = createPokemonNode(&pokedex[pokemonId - 1]);
+        printf("Pokemon %s (ID %d) added.\n", node->data->name, pokemonId);
+        return node;
     }
     else {
-        printf("Current Node ID: %d, Inserting Pokemon ID: %d\n", newNode->data->id, pokemonId);
+       // printf("Current Node ID: %d, Inserting Pokemon ID: %d\n", newNode->data->id, pokemonId);
     }
     if (newNode->data->id == pokedex[pokemonId - 1].id) {
         //base case if the node is present then return it
@@ -479,14 +482,13 @@ PokemonNode *insertPokemonNode(PokemonNode *newNode, int pokemonId) {
     }
     if (newNode->data->id < pokedex[pokemonId - 1].id) {
         //if the id is bigger then right node
-        printf("Going right from Node ID: %d\n", newNode->data->id);
+       // printf("Going right from Node ID: %d\n", newNode->data->id);
         newNode->right = insertPokemonNode(newNode->right, pokemonId);
     }
-    else {
+    else if (newNode->data->id > pokedex[pokemonId - 1].id) {
         //if id is smaller then left node
-        printf("Going left from Node ID: %d\n", newNode->data->id);
+        //printf("Going left from Node ID: %d\n", newNode->data->id);
         newNode->left = insertPokemonNode(newNode->left, pokemonId);
     }
-    printf("Pokemon %s(ID %d) added.\n", newNode->data->name, pokemonId);
     return newNode;
 }
