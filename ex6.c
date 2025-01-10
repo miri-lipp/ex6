@@ -249,52 +249,52 @@ void displayMenu(OwnerNode *owner)
 // --------------------------------------------------------------
 // Sub-menu for existing Pokedex
 // --------------------------------------------------------------
-void enterExistingPokedexMenu()
-{
-    // list owners
-    printf("\nExisting Pokedexes:\n");
-    // you need to implement a few things here :)
-
-    printf("\nEntering %s's Pokedex...\n", cur->ownerName);
-
-    int subChoice;
-    do
-    {
-        printf("\n-- %s's Pokedex Menu --\n", cur->ownerName);
-        printf("1. Add Pokemon\n");
-        printf("2. Display Pokedex\n");
-        printf("3. Release Pokemon (by ID)\n");
-        printf("4. Pokemon Fight!\n");
-        printf("5. Evolve Pokemon\n");
-        printf("6. Back to Main\n");
-
-        subChoice = readIntSafe("Your choice: ");
-
-        switch (subChoice)
-        {
-        case 1:
-            addPokemon(cur);
-            break;
-        case 2:
-            displayMenu(cur);
-            break;
-        case 3:
-            freePokemon(cur);
-            break;
-        case 4:
-            pokemonFight(cur);
-            break;
-        case 5:
-            evolvePokemon(cur);
-            break;
-        case 6:
-            printf("Back to Main Menu.\n");
-            break;
-        default:
-            printf("Invalid choice.\n");
-        }
-    } while (subChoice != 6);
-}
+// void enterExistingPokedexMenu()
+// {
+//     // list owners
+//     printf("\nExisting Pokedexes:\n");
+//     // you need to implement a few things here :)
+//
+//     printf("\nEntering %s's Pokedex...\n", cur->ownerName);
+//
+//     int subChoice;
+//     do
+//     {
+//         printf("\n-- %s's Pokedex Menu --\n", cur->ownerName);
+//         printf("1. Add Pokemon\n");
+//         printf("2. Display Pokedex\n");
+//         printf("3. Release Pokemon (by ID)\n");
+//         printf("4. Pokemon Fight!\n");
+//         printf("5. Evolve Pokemon\n");
+//         printf("6. Back to Main\n");
+//
+//         subChoice = readIntSafe("Your choice: ");
+//
+//         switch (subChoice)
+//         {
+//         case 1:
+//             addPokemon(cur);
+//             break;
+//         case 2:
+//             displayMenu(cur);
+//             break;
+//         case 3:
+//             freePokemon(cur);
+//             break;
+//         case 4:
+//             pokemonFight(cur);
+//             break;
+//         case 5:
+//             evolvePokemon(cur);
+//             break;
+//         case 6:
+//             printf("Back to Main Menu.\n");
+//             break;
+//         default:
+//             printf("Invalid choice.\n");
+//         }
+//     } while (subChoice != 6);
+// }
 
 // --------------------------------------------------------------
 // Main Menu
@@ -348,4 +348,71 @@ int main()
     mainMenu();
     freeAllOwners();
     return 0;
+}
+
+void openPokedexMenu(void) {
+    OwnerNode *owner = (OwnerNode *)malloc(sizeof(OwnerNode));
+    PokemonNode *node = (PokemonNode *)malloc(sizeof(PokemonNode));
+    if (owner == NULL) {
+        printf("Memory allocation failed.\n");
+        exit(1);
+    }
+    if (node == NULL) {
+        printf("Memory allocation failed.\n");
+        exit(1);
+    }
+    printf("Your name:\n");
+    if (ownerHead == NULL) {
+        ownerHead = owner; //if head of the linked list is null then the linked list is empty
+        ownerHead->ownerName = getDynamicInput(); //need to add node to the binary tree
+        ownerHead->prev = ownerHead; //previous node becomes the last one i added to linked list
+        ownerHead->next = NULL; //next node is null to know when the linked list ends
+        //add data to root of binary tree
+        //HOW? i have an array of pokemon data so i need to add pokemondata[] to data struct. da fuck?
+        ownerHead->pokedexRoot = node; //am i right?
+        createOwner(ownerHead->ownerName, StarterPokemon(node));
+
+    }
+    else { //same thing but when linked list is not empty
+        owner->ownerName = getDynamicInput();
+        owner->prev = owner;
+        owner->next = NULL;
+    }
+}
+
+PokemonNode *StarterPokemon(PokemonNode *node) {
+    int choice;
+    printf("Choose Starter:\n\
+                1. Bulbasaur\n\
+                2. Charmander\n\
+                3. Squirtle\n");
+    choice = readIntSafe("Your choice: ");
+    switch (choice) {
+        case 1: {
+            node->data = &pokedex[0]; //where am i in the wrong here?????????????
+            node->left = node->right = NULL;
+            return node;
+        }
+        case 2: {
+            node->data = &pokedex[3];
+            node->left = node->right = NULL;
+            return node;
+        }
+        case 3: {
+            node->data = &pokedex[6];
+            node->left = node->right = NULL;
+            return node;
+        }
+        default:
+            printf("Invalid choice.\n");
+            return StarterPokemon(node);
+    } //recursion supremacy
+}
+
+OwnerNode *createOwner(char *ownerName, PokemonNode *starter) {
+
+}
+
+PokemonNode *createPokemonNode(const PokemonData *data) {
+
 }
