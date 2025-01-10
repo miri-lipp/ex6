@@ -114,8 +114,8 @@ const char *getTypeName(PokemonType type);
  * @return newly allocated PokemonNode*
  * Why we made it: We need a standard way to allocate BST nodes.
  */
-PokemonNode *createPokemonNode(const PokemonData *data);
-
+PokemonNode *createPokemonNode(const PokemonData *data); //i actually accidentally wrote one function for this two
+//maybe when i will optimise my code i will make it into two
 /**
  * @brief Create an OwnerNode for the circular owners list.
  * @param ownerName the dynamically allocated name
@@ -411,7 +411,7 @@ OwnerNode *findOwnerByName(const char *name);
 
 PokemonNode *StarterPokemon(PokemonNode *node);
 void enterExistingPokedexMenu(void);
-
+char *ListLookUp(int choice);
 /**
  * @brief Creates a new Pokedex (prompt for name, check uniqueness, choose starter).
  * Why we made it: The main entry for building a brand-new Pokedex.

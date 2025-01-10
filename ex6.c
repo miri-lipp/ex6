@@ -320,7 +320,7 @@ void mainMenu()
             openPokedexMenu();
             break;
         case 2:
-            //enterExistingPokedexMenu();
+            enterExistingPokedexMenu();
             break;
         case 3:
             //deletePokedex();
@@ -365,7 +365,7 @@ void openPokedexMenu(void) {
     if (ownerHead == NULL) {
         ownerHead = owner; //if head of the linked list is null then the linked list is empty
         ownerHead->ownerName = getDynamicInput(); //need to add node to the binary tree
-        ownerHead->prev = ownerHead; //previous node becomes the last one i added to linked list
+        ownerHead->prev = NULL; //previous node becomes the last one i added to linked list
         ownerHead->next = NULL; //next node is null to know when the linked list ends
         //add data to root of binary tree
         //HOW? i have an array of pokemon data so i need to add pokemondata[] to data struct. da fuck?
@@ -374,11 +374,17 @@ void openPokedexMenu(void) {
         printf("New Pokedex created for %s with starter %s.\n",ownerHead->ownerName, node->data->name);
     }
     else { //same thing but when linked list is not empty
+        OwnerNode *current = ownerHead;
         owner->ownerName = getDynamicInput();
-        owner->prev = owner;
+        owner->prev = NULL;
         owner->next = NULL;
+        //going to the end of linked list
+        while (current->next != NULL)
+            current = current->next;
+        current->next = owner; //next in line
+        owner->prev = current; //previous becomes current
         owner->pokedexRoot = node;
-        node = StarterPokemon(node);
+        node = StarterPokemon(node); //initializing binqry tree. i hope
         printf("New Pokedex created for %s with starter %s.\n",owner->ownerName, node->data->name);
     }
 }
@@ -393,7 +399,7 @@ PokemonNode *StarterPokemon(PokemonNode *node) {
     switch (choice) {
         case 1: {
             node->data = &pokedex[0]; //where am i in the wrong here?????????????
-            node->left = node->right = NULL;
+            node->left = node->right = NULL; //right and left nodes == NULL because it's the first one in tree
             return node;
         }
         case 2: {
@@ -411,4 +417,40 @@ PokemonNode *StarterPokemon(PokemonNode *node) {
             return StarterPokemon(node);
     } //recursion supremacy
 
+}
+
+void enterExistingPokedexMenu(void) {
+    printf("Existing Pokedexes (circular list):\n");
+    //i need to print list here
+    if (ownerHead == NULL) {
+        printf("No existing Pokedexes.\n");
+        return;
+    }
+    int count = 1;
+    int choice;
+    OwnerNode *node = ownerHead;//first one in the list
+    while (node != NULL){ //while the node is nor NULL
+        printf("%d. %s\n", count, node->ownerName);
+        node = node->next; //next one
+        count++;
+    }
+    printf("Choose a Pokedex by number: \n");
+    choice = readIntSafe("");
+    while (choice > count - 1 || choice < 1) {
+        printf("Invalid choice.\n");
+        choice = readIntSafe("");
+    }
+    printf("Entering %s Pokedex...", ListLookUp(choice));
+}
+
+char *ListLookUp(int choice) { //looking for a specific person in list and returning their name
+    OwnerNode *current = ownerHead;
+    int count = 1;
+    while (current != NULL) {
+        if (count == choice)
+            break;
+        current = current->next;
+        count++;
+    }
+    return current->ownerName;
 }
