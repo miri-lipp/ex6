@@ -207,44 +207,44 @@ void printPokemonNode(PokemonNode *node)
 // --------------------------------------------------------------
 // Display Menu
 // --------------------------------------------------------------
-void displayMenu(OwnerNode *owner)
-{
-    if (!owner->pokedexRoot)
-    {
-        printf("Pokedex is empty.\n");
-        return;
-    }
-
-    printf("Display:\n");
-    printf("1. BFS (Level-Order)\n");
-    printf("2. Pre-Order\n");
-    printf("3. In-Order\n");
-    printf("4. Post-Order\n");
-    printf("5. Alphabetical (by name)\n");
-
-    int choice = readIntSafe("Your choice: ");
-
-    switch (choice)
-    {
-    case 1:
-        displayBFS(owner->pokedexRoot);
-        break;
-    case 2:
-        preOrderTraversal(owner->pokedexRoot);
-        break;
-    case 3:
-        inOrderTraversal(owner->pokedexRoot);
-        break;
-    case 4:
-        postOrderTraversal(owner->pokedexRoot);
-        break;
-    case 5:
-        displayAlphabetical(owner->pokedexRoot);
-        break;
-    default:
-        printf("Invalid choice.\n");
-    }
-}
+// void displayMenu(OwnerNode *owner)
+// {
+//     if (!owner->pokedexRoot)
+//     {
+//         printf("Pokedex is empty.\n");
+//         return;
+//     }
+//
+//     printf("Display:\n");
+//     printf("1. BFS (Level-Order)\n");
+//     printf("2. Pre-Order\n");
+//     printf("3. In-Order\n");
+//     printf("4. Post-Order\n");
+//     printf("5. Alphabetical (by name)\n");
+//
+//     int choice = readIntSafe("Your choice: ");
+//
+//     switch (choice)
+//     {
+//     case 1:
+//         displayBFS(owner->pokedexRoot);
+//         break;
+//     case 2:
+//         preOrderTraversal(owner->pokedexRoot);
+//         break;
+//     case 3:
+//         inOrderTraversal(owner->pokedexRoot);
+//         break;
+//     case 4:
+//         postOrderTraversal(owner->pokedexRoot);
+//         break;
+//     case 5:
+//         displayAlphabetical(owner->pokedexRoot);
+//         break;
+//     default:
+//         printf("Invalid choice.\n");
+//     }
+// }
 
 // --------------------------------------------------------------
 // Sub-menu for existing Pokedex
@@ -320,19 +320,19 @@ void mainMenu()
             openPokedexMenu();
             break;
         case 2:
-            enterExistingPokedexMenu();
+            //enterExistingPokedexMenu();
             break;
         case 3:
-            deletePokedex();
+            //deletePokedex();
             break;
         case 4:
-            mergePokedexMenu();
+            //mergePokedexMenu();
             break;
         case 5:
-            sortOwners();
+            //sortOwners();
             break;
         case 6:
-            printOwnersCircular();
+            //printOwnersCircular();
             break;
         case 7:
             printf("Goodbye!\n");
@@ -346,7 +346,7 @@ void mainMenu()
 int main()
 {
     mainMenu();
-    freeAllOwners();
+    //freeAllOwners();
     return 0;
 }
 
@@ -370,13 +370,16 @@ void openPokedexMenu(void) {
         //add data to root of binary tree
         //HOW? i have an array of pokemon data so i need to add pokemondata[] to data struct. da fuck?
         ownerHead->pokedexRoot = node; //am i right?
-        createOwner(ownerHead->ownerName, StarterPokemon(node));
-
+        node = StarterPokemon(node);
+        printf("New Pokedex created for %s with starter %s.\n",ownerHead->ownerName, node->data->name);
     }
     else { //same thing but when linked list is not empty
         owner->ownerName = getDynamicInput();
         owner->prev = owner;
         owner->next = NULL;
+        owner->pokedexRoot = node;
+        node = StarterPokemon(node);
+        printf("New Pokedex created for %s with starter %s.\n",owner->ownerName, node->data->name);
     }
 }
 
@@ -407,12 +410,5 @@ PokemonNode *StarterPokemon(PokemonNode *node) {
             printf("Invalid choice.\n");
             return StarterPokemon(node);
     } //recursion supremacy
-}
-
-OwnerNode *createOwner(char *ownerName, PokemonNode *starter) {
-
-}
-
-PokemonNode *createPokemonNode(const PokemonData *data) {
 
 }
