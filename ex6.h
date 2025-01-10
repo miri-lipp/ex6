@@ -374,7 +374,6 @@ void sortOwners(void);
  * Why we made it: Used internally by bubble sort to swap data.
  */
 void swapOwnerData(OwnerNode *a, OwnerNode *b);
-
 /* ------------------------------------------------------------
    9) Circular List Linking & Searching
    ------------------------------------------------------------ */

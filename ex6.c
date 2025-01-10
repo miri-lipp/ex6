@@ -544,11 +544,53 @@ void postOrderTraversal(PokemonNode *root) {
 }
 
 void displayAlphabetical(PokemonNode *root) {
-
+    NodeArray pokemons;
+    initNodeArray(&pokemons, 1);
+    //printf("Adding Pokemon ID: %d, Name: %s to NodeArray.\n", root->data->id, root->data->name);
+    collectAll(root, &pokemons);
+    qsort(pokemons.nodes,pokemons.size, sizeof(PokemonNode*), compareByNameNode);
+    for (int i = 0; i < pokemons.size; i++) {
+        PrintPokemon(pokemons.nodes[i]);
+    }
 }
 
 void initNodeArray(NodeArray *na, int cap) {
+    na->nodes = malloc(cap * sizeof(PokemonNode *)); //initializing array inside of struct
+    if (na->nodes == NULL) {
+        printf("Memory allocation failed.\n");
+        exit(1);
+    }
+    na->size = 0;
+}
 
+void addNode(NodeArray *na, PokemonNode *node) { //i'm very not sure in my doings here
+    if (na->size >= na->capacity) {
+        na->capacity *= 2;
+        na->nodes = realloc(na->nodes, na->capacity * sizeof(PokemonNode *));
+        if (na->nodes == NULL) {
+            printf("Memory allocation failed.\n");
+            exit(1);
+        }
+    }
+    na->nodes[na->size] = node; //adding first element to my array in struct
+    na->size++;//size increase
+}
+
+void collectAll(PokemonNode *root, NodeArray *na) { //bro i'm trying to destroy these data structures it just happens that they somehow end up working
+    if (root == NULL) //base case
+        return;
+   // printf("Adding Pokemon ID: %d, Name: %s to NodeArray.\n", root->data->id, root->data->name);
+    addNode(na, root);
+   // printf("Traversing left from Pokemon ID: %d, Name: %s\n", root->data->id, root->data->name);
+    collectAll(root->left, na);
+    //printf("Traversing right from Pokemon ID: %d, Name: %s\n", root->data->id, root->data->name);
+    collectAll(root->right, na);
+}
+
+int compareByNameNode(const void *a, const void *b) { //how the fuck do i implement qsort here?
+    PokemonNode *nodeA = *(PokemonNode **)a;
+    PokemonNode *nodeB = *(PokemonNode **)b;
+    return strcmp(nodeA->data->name, nodeB->data->name);
 }
 
 void PrintPokemon(PokemonNode *root) {
