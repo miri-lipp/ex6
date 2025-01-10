@@ -26,10 +26,6 @@ typedef enum
     ICE
 } PokemonType;
 
-const char *types[] = {"GRASS", "FIRE", "WATER", "BUG", "NORMAL",
-                        "POISON", "ELECTRIC", "GROUND", "FAIRY",
-                        "FIGHTING", "PSYCHIC", "ROCK", "GHOST", "DRAGON", "ICE"};
-const char *evolution[] = {"No", "Yes"};
 typedef enum
 {
     CANNOT_EVOLVE,
@@ -360,7 +356,7 @@ void freePokemon(OwnerNode *owner);
  * Why we made it: We want a simple menu that picks from various traversals.
  */
 void displayMenu(OwnerNode *owner);
-
+void PrintPokemon(PokemonNode *root);
 /* ------------------------------------------------------------
    8) Sorting Owners (Bubble Sort on Circular List)
    ------------------------------------------------------------ */

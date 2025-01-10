@@ -233,13 +233,13 @@ void displayMenu(OwnerNode *owner)
         preOrderTraversal(owner->pokedexRoot);
         break;
     case 3:
-       // inOrderTraversal(owner->pokedexRoot);
+        inOrderTraversal(owner->pokedexRoot);
         break;
     case 4:
-       // postOrderTraversal(owner->pokedexRoot);
+        postOrderTraversal(owner->pokedexRoot);
         break;
     case 5:
-        //displayAlphabetical(owner->pokedexRoot);
+        displayAlphabetical(owner->pokedexRoot);
         break;
     default:
         printf("Invalid choice.\n");
@@ -513,14 +513,8 @@ int Height(PokemonNode *node) {
 void PrintLevel(PokemonNode *root, int level) {
     if (root == NULL)
         return;
-    if (level == 1) {
-        printf("ID: %d, ", root->data->id);
-        printf("Name: %s, ", root->data->name);
-        printf("Type: %s, ", types[root->data->TYPE]);
-        printf("HP: %d, ", root->data->hp);
-        printf("Attack: %d, ", root->data->hp);
-        printf("Can Evolve: %s\n", evolution[root->data->CAN_EVOLVE]);
-    }
+    if (level == 1)
+        PrintPokemon(root);
     PrintLevel(root->left, level - 1);
     PrintLevel(root->right, level - 1);
 }
@@ -528,4 +522,43 @@ void PrintLevel(PokemonNode *root, int level) {
 void preOrderTraversal(PokemonNode *root) {
     if (root == NULL)
         return;
+    PrintPokemon(root);
+    preOrderTraversal(root->left);
+    preOrderTraversal(root->right);
+}
+
+void inOrderTraversal(PokemonNode *root) {
+    if (root == NULL)
+        return;
+    inOrderTraversal(root->left);
+    PrintPokemon(root);
+    inOrderTraversal(root->right);
+}
+
+void postOrderTraversal(PokemonNode *root) {
+    if (root == NULL)
+        return;
+    postOrderTraversal(root->left);
+    postOrderTraversal(root->right);
+    PrintPokemon(root);
+}
+
+void displayAlphabetical(PokemonNode *root) {
+
+}
+
+void initNodeArray(NodeArray *na, int cap) {
+
+}
+
+void PrintPokemon(PokemonNode *root) {
+    printf("ID: %d, ", root->data->id);
+    printf("Name: %s, ", root->data->name);
+    printf("Type: %s, ", getTypeName(root->data->TYPE));
+    printf("HP: %d, ", root->data->hp);
+    printf("Attack: %d, ", root->data->hp);
+    if (root->data->CAN_EVOLVE == 0)
+        printf("Can Evolve: No\n");
+    else
+        printf("Can Evolve: Yes\n");
 }
