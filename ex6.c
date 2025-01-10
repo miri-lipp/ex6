@@ -249,52 +249,69 @@ void printPokemonNode(PokemonNode *node)
 // --------------------------------------------------------------
 // Sub-menu for existing Pokedex
 // --------------------------------------------------------------
-// void enterExistingPokedexMenu()
-// {
-//     // list owners
-//     printf("\nExisting Pokedexes:\n");
-//     // you need to implement a few things here :)
-//
-//     printf("\nEntering %s's Pokedex...\n", cur->ownerName);
-//
-//     int subChoice;
-//     do
-//     {
-//         printf("\n-- %s's Pokedex Menu --\n", cur->ownerName);
-//         printf("1. Add Pokemon\n");
-//         printf("2. Display Pokedex\n");
-//         printf("3. Release Pokemon (by ID)\n");
-//         printf("4. Pokemon Fight!\n");
-//         printf("5. Evolve Pokemon\n");
-//         printf("6. Back to Main\n");
-//
-//         subChoice = readIntSafe("Your choice: ");
-//
-//         switch (subChoice)
-//         {
-//         case 1:
-//             addPokemon(cur);
-//             break;
-//         case 2:
-//             displayMenu(cur);
-//             break;
-//         case 3:
-//             freePokemon(cur);
-//             break;
-//         case 4:
-//             pokemonFight(cur);
-//             break;
-//         case 5:
-//             evolvePokemon(cur);
-//             break;
-//         case 6:
-//             printf("Back to Main Menu.\n");
-//             break;
-//         default:
-//             printf("Invalid choice.\n");
-//         }
-//     } while (subChoice != 6);
-// }
+void enterExistingPokedexMenu()
+{
+    // list owners
+    printf("\nExisting Pokedexes:\n");
+    if (ownerHead == NULL) {
+        printf("No existing Pokedexes.\n");
+        return;
+    }
+    int count = 1;
+    int choice;
+    OwnerNode *node = ownerHead;//first one in the list
+    while (node != NULL){ //while the node is nor NULL
+        printf("%d. %s\n", count, node->ownerName);
+        node = node->next; //next one
+        count++;
+    }
+    printf("Choose a Pokedex by number: \n");
+    choice = readIntSafe("");
+    while (choice > count - 1 || choice < 1) {
+        printf("Invalid choice.\n");
+        choice = readIntSafe("");
+    }
+    OwnerNode *current = ListLookUp(choice);
+    printf("Entering %s Pokedex...", current->ownerName);
+
+    int subChoice;
+    do
+    {
+        printf("\n-- %s's Pokedex Menu --\n", current->ownerName);
+        printf("1. Add Pokemon\n");
+        printf("2. Display Pokedex\n");
+        printf("3. Release Pokemon (by ID)\n");
+        printf("4. Pokemon Fight!\n");
+        printf("5. Evolve Pokemon\n");
+        printf("6. Back to Main\n");
+
+        subChoice = readIntSafe("Your choice: ");
+
+        switch (subChoice)
+        {
+        case 1:
+            addPokemon(current);
+            break;
+        case 2:
+            //displayMenu(current);
+            break;
+        case 3:
+            //freePokemon(current);
+            break;
+        case 4:
+            //pokemonFight(current);
+            break;
+        case 5:
+            //evolvePokemon(current);
+            break;
+        case 6:
+            printf("Back to Main Menu.\n");
+            break;
+        default:
+            printf("Invalid choice.\n");
+        }
+    } while (subChoice != 6);
+}
 
 // --------------------------------------------------------------
 // Main Menu
@@ -383,8 +400,7 @@ void openPokedexMenu(void) {
             current = current->next;
         current->next = owner; //next in line
         owner->prev = current; //previous becomes current
-        owner->pokedexRoot = node;
-        node = StarterPokemon(node); //initializing binqry tree. i hope
+        owner->pokedexRoot = StarterPokemon(node); //initializing binqry tree. i hope
         printf("New Pokedex created for %s with starter %s.\n",owner->ownerName, node->data->name);
     }
 }
@@ -398,52 +414,32 @@ PokemonNode *StarterPokemon(PokemonNode *node) {
     choice = readIntSafe("Your choice: ");
     switch (choice) {
         case 1: {
-            node->data = &pokedex[0]; //where am i in the wrong here?????????????
-            node->left = node->right = NULL; //right and left nodes == NULL because it's the first one in tree
-            return node;
+            return createPokemonNode(&pokedex[0]);
         }
         case 2: {
-            node->data = &pokedex[3];
-            node->left = node->right = NULL;
-            return node;
+            return createPokemonNode(&pokedex[3]);
         }
         case 3: {
-            node->data = &pokedex[6];
-            node->left = node->right = NULL;
-            return node;
+            return createPokemonNode(&pokedex[6]);
         }
         default:
             printf("Invalid choice.\n");
             return StarterPokemon(node);
     } //recursion supremacy
-
 }
 
-void enterExistingPokedexMenu(void) {
-    printf("Existing Pokedexes (circular list):\n");
-    //i need to print list here
-    if (ownerHead == NULL) {
-        printf("No existing Pokedexes.\n");
-        return;
+PokemonNode *createPokemonNode(const PokemonData *data) {
+    PokemonNode *node = (PokemonNode *)malloc(sizeof(PokemonNode));
+    if (node == NULL) {
+        printf("Memory allocation failed.\n");
+        exit(1);
     }
-    int count = 1;
-    int choice;
-    OwnerNode *node = ownerHead;//first one in the list
-    while (node != NULL){ //while the node is nor NULL
-        printf("%d. %s\n", count, node->ownerName);
-        node = node->next; //next one
-        count++;
-    }
-    printf("Choose a Pokedex by number: \n");
-    choice = readIntSafe("");
-    while (choice > count - 1 || choice < 1) {
-        printf("Invalid choice.\n");
-        choice = readIntSafe("");
-    }
-    printf("Entering %s Pokedex...", ListLookUp(choice));
+    node->data = data;
+    node->left = node->right = NULL;//right and left nodes == NULL because it's the first one in tree
+    return node;
 }
 
-char *ListLookUp(int choice) { //looking for a specific person in list and returning their name
+OwnerNode *ListLookUp(int choice) { //looking for a specific person in list and returning their name
     OwnerNode *current = ownerHead;
     int count = 1;
     while (current != NULL) {
@@ -452,5 +448,45 @@ char *ListLookUp(int choice) { //looking for a specific person in list and retur
         current = current->next;
         count++;
     }
-    return current->ownerName;
+    return current;
+}
+
+void addPokemon(OwnerNode *owner) {
+    int pokemonId;
+    printf("Enter ID to add:\n");
+    pokemonId = readIntSafe("");
+    if (pokemonId < 1|| pokemonId > 151) {
+        printf("Invalid ID.\n");
+        return;
+    }
+    owner->pokedexRoot = insertPokemonNode(owner->pokedexRoot, pokemonId);
+}
+
+PokemonNode *insertPokemonNode(PokemonNode *newNode, int pokemonId) {
+    if (newNode == NULL) {
+        //if tree empty return node
+        printf("Tree is empty. Creating new node for Pokemon ID: %d\n", pokemonId);
+        printf("Pokemon ID %d added to the Pokedex.\n", pokemonId);
+        return createPokemonNode(&pokedex[pokemonId - 1]);
+    }
+    else {
+        printf("Current Node ID: %d, Inserting Pokemon ID: %d\n", newNode->data->id, pokemonId);
+    }
+    if (newNode->data->id == pokedex[pokemonId - 1].id) {
+        //base case if the node is present then return it
+        printf("Pokemon with ID %d is already in the Pokedex. No changes made.\n", pokemonId);
+        return newNode;
+    }
+    if (newNode->data->id < pokedex[pokemonId - 1].id) {
+        //if the id is bigger then right node
+        printf("Going right from Node ID: %d\n", newNode->data->id);
+        newNode->right = insertPokemonNode(newNode->right, pokemonId);
+    }
+    else {
+        //if id is smaller then left node
+        printf("Going left from Node ID: %d\n", newNode->data->id);
+        newNode->left = insertPokemonNode(newNode->left, pokemonId);
+    }
+    printf("Pokemon %s(ID %d) added.\n", newNode->data->name, pokemonId);
+    return newNode;
 }

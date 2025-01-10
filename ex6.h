@@ -157,7 +157,7 @@ void freeOwnerNode(OwnerNode *owner);
  * @return updated BST root
  * Why we made it: Standard BST insertion ignoring duplicates.
  */
-PokemonNode *insertPokemonNode(PokemonNode *root, PokemonNode *newNode);
+PokemonNode *insertPokemonNode(PokemonNode *newNode, int pokemonId);
 
 /**
  * @brief BFS search for a Pokemon by ID in the BST.
@@ -411,7 +411,7 @@ OwnerNode *findOwnerByName(const char *name);
 
 PokemonNode *StarterPokemon(PokemonNode *node);
 void enterExistingPokedexMenu(void);
-char *ListLookUp(int choice);
+OwnerNode *ListLookUp(int choice);
 /**
  * @brief Creates a new Pokedex (prompt for name, check uniqueness, choose starter).
  * Why we made it: The main entry for building a brand-new Pokedex.
