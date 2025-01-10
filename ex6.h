@@ -26,6 +26,10 @@ typedef enum
     ICE
 } PokemonType;
 
+const char *types[] = {"GRASS", "FIRE", "WATER", "BUG", "NORMAL",
+                        "POISON", "ELECTRIC", "GROUND", "FAIRY",
+                        "FIGHTING", "PSYCHIC", "ROCK", "GHOST", "DRAGON", "ICE"};
+const char *evolution[] = {"No", "Yes"};
 typedef enum
 {
     CANNOT_EVOLVE,
@@ -291,7 +295,8 @@ void displayAlphabetical(PokemonNode *root);
  * Why we made it: Quick listing in BFS order.
  */
 void displayBFS(PokemonNode *root);
-
+int Height(PokemonNode *node);
+void PrintLevel(PokemonNode *root, int level);
 /**
  * @brief Pre-order user-friendly display (Root->Left->Right).
  * @param root BST root

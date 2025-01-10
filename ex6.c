@@ -207,44 +207,44 @@ void printPokemonNode(PokemonNode *node)
 // --------------------------------------------------------------
 // Display Menu
 // --------------------------------------------------------------
-// void displayMenu(OwnerNode *owner)
-// {
-//     if (!owner->pokedexRoot)
-//     {
-//         printf("Pokedex is empty.\n");
-//         return;
-//     }
-//
-//     printf("Display:\n");
-//     printf("1. BFS (Level-Order)\n");
-//     printf("2. Pre-Order\n");
-//     printf("3. In-Order\n");
-//     printf("4. Post-Order\n");
-//     printf("5. Alphabetical (by name)\n");
-//
-//     int choice = readIntSafe("Your choice: ");
-//
-//     switch (choice)
-//     {
-//     case 1:
-//         displayBFS(owner->pokedexRoot);
-//         break;
-//     case 2:
-//         preOrderTraversal(owner->pokedexRoot);
-//         break;
-//     case 3:
-//         inOrderTraversal(owner->pokedexRoot);
-//         break;
-//     case 4:
-//         postOrderTraversal(owner->pokedexRoot);
-//         break;
-//     case 5:
-//         displayAlphabetical(owner->pokedexRoot);
-//         break;
-//     default:
-//         printf("Invalid choice.\n");
-//     }
-// }
+void displayMenu(OwnerNode *owner)
+{
+    if (!owner->pokedexRoot)
+    {
+        printf("Pokedex is empty.\n");
+        return;
+    }
+
+    printf("Display:\n");
+    printf("1. BFS (Level-Order)\n");
+    printf("2. Pre-Order\n");
+    printf("3. In-Order\n");
+    printf("4. Post-Order\n");
+    printf("5. Alphabetical (by name)\n");
+
+    int choice = readIntSafe("Your choice: ");
+
+    switch (choice)
+    {
+    case 1:
+        displayBFS(owner->pokedexRoot);
+        break;
+    case 2:
+        preOrderTraversal(owner->pokedexRoot);
+        break;
+    case 3:
+       // inOrderTraversal(owner->pokedexRoot);
+        break;
+    case 4:
+       // postOrderTraversal(owner->pokedexRoot);
+        break;
+    case 5:
+        //displayAlphabetical(owner->pokedexRoot);
+        break;
+    default:
+        printf("Invalid choice.\n");
+    }
+}
 
 // --------------------------------------------------------------
 // Sub-menu for existing Pokedex
@@ -293,7 +293,7 @@ void enterExistingPokedexMenu()
             addPokemon(current);
             break;
         case 2:
-            //displayMenu(current);
+            displayMenu(current);
             break;
         case 3:
             //freePokemon(current);
@@ -472,9 +472,9 @@ PokemonNode *insertPokemonNode(PokemonNode *newNode, int pokemonId) {
         printf("Pokemon %s (ID %d) added.\n", node->data->name, pokemonId);
         return node;
     }
-    else {
-       // printf("Current Node ID: %d, Inserting Pokemon ID: %d\n", newNode->data->id, pokemonId);
-    }
+    // else {
+    //  printf("Current Node ID: %d, Inserting Pokemon ID: %d\n", newNode->data->id, pokemonId);
+    // }
     if (newNode->data->id == pokedex[pokemonId - 1].id) {
         //base case if the node is present then return it
         printf("Pokemon with ID %d is already in the Pokedex. No changes made.\n", pokemonId);
@@ -491,4 +491,41 @@ PokemonNode *insertPokemonNode(PokemonNode *newNode, int pokemonId) {
         newNode->left = insertPokemonNode(newNode->left, pokemonId);
     }
     return newNode;
+}
+
+void displayBFS(PokemonNode *root) {
+    int h = Height(root);
+    for (int i = 1; i <= h; i++) {
+        PrintLevel(root, i);
+    }
+}
+//need to find *height* of a tree
+int Height(PokemonNode *node) {
+    if (node == NULL)
+        return 0;
+    int leftHeight = Height(node->left); //height of left nodes
+    int rightHeight = Height(node->right); //height of right nodes
+    if (leftHeight > rightHeight) //if left node is bigger than right return leftheight + 1
+        return leftHeight + 1;
+    return rightHeight + 1;//else return rightheight + 1
+}
+
+void PrintLevel(PokemonNode *root, int level) {
+    if (root == NULL)
+        return;
+    if (level == 1) {
+        printf("ID: %d, ", root->data->id);
+        printf("Name: %s, ", root->data->name);
+        printf("Type: %s, ", types[root->data->TYPE]);
+        printf("HP: %d, ", root->data->hp);
+        printf("Attack: %d, ", root->data->hp);
+        printf("Can Evolve: %s\n", evolution[root->data->CAN_EVOLVE]);
+    }
+    PrintLevel(root->left, level - 1);
+    PrintLevel(root->right, level - 1);
+}
+
+void preOrderTraversal(PokemonNode *root) {
+    if (root == NULL)
+        return;
 }
