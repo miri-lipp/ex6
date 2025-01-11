@@ -657,7 +657,7 @@ PokemonNode* FindMax(PokemonNode *root) {
 }
 
 void freePokemonTree(PokemonNode *root) {
-    if (root == NULL)
+    if (root == NULL) //base case
         return;
     freePokemonTree(root->left);
     freePokemonTree(root->right);
