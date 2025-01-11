@@ -327,7 +327,7 @@ void mainMenu()
             enterExistingPokedexMenu();
             break;
         case 3:
-            //deletePokedex();
+            deletePokedex();
             break;
         case 4:
             //mergePokedexMenu();
@@ -446,16 +446,18 @@ void addPokemon(OwnerNode *owner) {
         return;
     }
     //printf("Current Node ID: %d, Inserting Pokemon ID: %d\n", owner->pokedexRoot->data->id, pokemonId);
-    owner->pokedexRoot = insertPokemonNode(owner->pokedexRoot, pokemonId);
+    owner->pokedexRoot = insertPokemonNode(owner->pokedexRoot, pokemonId, 0);
     //printf("Pokemon %s (ID %d) added.\n", owner->pokedexRoot->data->name, pokemonId);
 }
 
-PokemonNode *insertPokemonNode(PokemonNode *newNode, int pokemonId) {
+PokemonNode *insertPokemonNode(PokemonNode *newNode, int pokemonId, int subChoice) {
     if (newNode == NULL) {
         //if tree empty return node
         // printf("Tree is empty. Creating new node for Pokemon ID: %d\n", pokemonId);
         // printf("Pokemon ID %d added to the Pokedex.\n", pokemonId);
         PokemonNode *node = createPokemonNode(&pokedex[pokemonId - 1]);
+        if (subChoice == 1) //just that printf won't get printed when i'm doing evolving
+            return node;
         printf("Pokemon %s (ID %d) added.\n", node->data->name, pokemonId);
         return node;
     }
@@ -464,18 +466,20 @@ PokemonNode *insertPokemonNode(PokemonNode *newNode, int pokemonId) {
     // }
     if (newNode->data->id == pokedex[pokemonId - 1].id) {
         //base case if the node is present then return it
+        if (subChoice == 1) //for when evolving to not print message
+            return newNode;
         printf("Pokemon with ID %d is already in the Pokedex. No changes made.\n", pokemonId);
         return newNode;
     }
     if (newNode->data->id < pokedex[pokemonId - 1].id) {
         //if the id is bigger then right node
        // printf("Going right from Node ID: %d\n", newNode->data->id);
-        newNode->right = insertPokemonNode(newNode->right, pokemonId);
+        newNode->right = insertPokemonNode(newNode->right, pokemonId, subChoice);
     }
     else if (newNode->data->id > pokedex[pokemonId - 1].id) {
         //if id is smaller then left node
         //printf("Going left from Node ID: %d\n", newNode->data->id);
-        newNode->left = insertPokemonNode(newNode->left, pokemonId);
+        newNode->left = insertPokemonNode(newNode->left, pokemonId, subChoice);
     }
     return newNode;
 }
@@ -607,58 +611,112 @@ void freePokemon(OwnerNode *owner) {
         printf("No Pokemon with ID %d found.\n", pokemonId);
         return;
     }
-    printf("Removing Pokemon %s (ID %d)\n", owner->pokedexRoot->data->name, pokemonId);
-    owner->pokedexRoot = ReleasePokemon(&owner->pokedexRoot, pokemonId);
+    printf("Removing Pokemon %s (ID %d)\n", searchPokemonBFS(owner->pokedexRoot, pokemonId)->data->name, pokemonId);
+    owner->pokedexRoot = ReleasePokemon(owner->pokedexRoot, searchPokemonBFS(owner->pokedexRoot, pokemonId)->data);
 }
 
-PokemonNode* ReleasePokemon(PokemonNode **root, int pokemonId) {
-    PokemonNode *node = *root;
-    if (pokemonId < node->data->id) {
-        //going left
-        printf("Going left: Current Node ID: %d\n", node->data->id);
-        return ReleasePokemon(&node->left, pokemonId);
+PokemonNode* ReleasePokemon(PokemonNode *root, PokemonData *data) {
+    if (root == NULL) //base case
+        return root;
+    if (data->id < root->data->id) {//going left
+        //printf("Going left: Current Node ID: %d\n", root->data->id);
+        root->left = ReleasePokemon(root->left, data);
     }
-    if (pokemonId > node->data->id) {
-        //going right
-        printf("Going right: Current Node ID: %d\n", node->data->id);
-        return ReleasePokemon(&node->right, pokemonId);
-    }
+    if (data->id > root->data->id) {//going right
+        //printf("Going right: Current Node ID: %d\n", root->data->id);
+        root->right = ReleasePokemon(root->right, data);
+    } //when the leaf is found
     else { //else if one child
-        printf("Found Pokemon to delete: ID %d, Name: %s\n", node->data->id, node->data->name);
-        PokemonNode *temp = NULL;
-        if (!node->left) {
-            //if there is only left node
-            temp = node->right;
-            printf("Node has no left child. Replacing with right child.\n");
-            free(node);
-            *root = temp;
-            return *root;
+       // printf("Found Pokemon to delete: ID %d, Name: %s\n", root->data->id, root->data->name);
+        if (root->left == NULL) {//if there is only right node or 0
+            PokemonNode *temp = root->right;
+            //printf("Node has no left child. Replacing with right child.\n");
+            free(root);
+            return temp;
         }
-        if (!node->right) {
-            temp = node->left;
-            printf("Node has no right child. Replacing with left child.\n");
-            free(node);
-            *root = temp;
-            return *root;
-        }
-        temp = FindMax(node->left); //find maximum in bst
-        printf("Node has two children. Replacing with max from left subtree: ID %d, Name: %s\n",
-               temp->data->id, temp->data->name);
-        node->data = temp->data; //replace everything
-        return ReleasePokemon(&temp->right, temp->data->id); //release temp
+        if (root->right == NULL) { //if only left node
+            PokemonNode *temp = root->left;
+            //printf("Node has no right child. Replacing with left child.\n");
+            free(root);
+            return temp;
+        } //both present
+        PokemonNode *temp = FindMax(root); //find maximum in bst
+        // printf("Node has two children. Replacing with max from left subtree: ID %d, Name: %s\n",
+        //        temp->data->id, temp->data->name);
+        root->data = temp->data; //replace everything
+        root->left = ReleasePokemon(root->left, temp->data);
     }
+    return root;
 }
 
 PokemonNode* FindMax(PokemonNode *root) {
-    while (root && root->right)
+    root = root->left;
+    while (root != NULL && root->right != NULL)
         root = root->right;
     return root;
 }
 
-void freePokemonNode(PokemonNode *node) {
-    if (node == NULL)
+void freePokemonTree(PokemonNode *root) {
+    if (root == NULL)
         return;
-    freePokemonNode(node->right);
+    freePokemonTree(root->left);
+    freePokemonTree(root->right);
+    free(root);
+}
+
+void freeOwnerNode(OwnerNode *owner) { //how am i contring if the owner in the middle of the list?
+    if (owner == NULL)
+        return;
+    if (owner->next == NULL) { //if next one is NULL then put NULL in the current
+        owner->prev = owner->prev->prev; //and pointer to previous becomes previous before previous
+        freePokemonTree(owner->pokedexRoot);
+        free(owner->pokedexRoot);
+        free(owner->ownerName);
+        free(owner);
+        owner = NULL;//current becomes next ==NULL and before it becomes current i think
+        return;
+    } //if owner next not NULL then next becomes next after next
+    if (owner == ownerHead) { //if deleteing from start of the list
+        owner->next = ownerHead;
+        freePokemonTree(owner->pokedexRoot);
+        free(owner->pokedexRoot);
+        free(owner->ownerName);
+        free(owner);
+        owner = NULL;
+        return;
+    }
+    owner->next = owner->next->next; //next owner in the list is the one that goes after the one that i'm deleting and if next NULL?
+    freePokemonTree(owner->pokedexRoot);
+    free(owner->pokedexRoot);
+    free(owner->ownerName);
+    free(owner);
+    owner = NULL;
+}
+
+void deletePokedex(void) {
+    printf("\n=== Delete a Pokedex ===\n");
+    if (ownerHead == NULL) {
+        printf("No existing Pokedexes.\n");
+        return;
+    }
+    int count = 1;
+    int choice;
+    OwnerNode *node = ownerHead;//first one in the list
+    while (node != NULL){ //while the node is nor NULL
+        printf("%d. %s\n", count, node->ownerName);
+        node = node->next; //next one
+        count++;
+    }
+    printf("Choose a Pokedex to delete by number: \n");
+    choice = readIntSafe("");
+    while (choice > count - 1 || choice < 1) {
+        printf("Invalid choice.\n");
+        choice = readIntSafe("");
+    }
+    OwnerNode *current = ListLookUp(choice);
+    printf("Deleting %s's entire Pokedex...", current->ownerName);
+    freeOwnerNode(current);
+    printf("Pokedex deleted.\n");
 }
 
 PokemonNode *searchPokemonBFS(PokemonNode *root, int id) {
@@ -670,11 +728,19 @@ PokemonNode *searchPokemonBFS(PokemonNode *root, int id) {
 }
 
 void pokemonFight(OwnerNode *owner) {
+    if (owner->pokedexRoot == NULL) {
+        printf("Pokedex is empty.\n");
+        return;
+    }
     int id1, id2;
     printf("Enter ID of the first Pokemon: \n");
     id1 = readIntSafe("");
     printf("Enter ID of the second Pokemon: \n");
     id2 = readIntSafe("");
+    if ((id1 || id2) < 1 || (id1 || id2) > 151) {
+        printf("Invalid ID.\n");
+        return;
+    }
     if (searchPokemonBFS(owner->pokedexRoot, id1) == NULL || searchPokemonBFS(owner->pokedexRoot, id2) == NULL) {
         printf("One or both Pokemon IDs not found.\n");
         return;
@@ -695,5 +761,29 @@ void pokemonFight(OwnerNode *owner) {
 }
 
 void evolvePokemon(OwnerNode *owner) {
-
+    if (owner->pokedexRoot == NULL) {
+        printf("Pokedex is empty.\n");
+        return;
+    }
+    int id;
+    printf("Enter ID of Pokemon to evolve: \n");
+    id = readIntSafe("");
+    if (id < 1 || id > 151) { //id out of bounds
+        printf("Invalid ID.\n");
+        return;
+    }
+    if (searchPokemonBFS(owner->pokedexRoot, id) == NULL) { //there is no pokemon in pokedex
+        printf("Pokemon ID not found.\n");
+        return;
+    }
+    if (searchPokemonBFS(owner->pokedexRoot, id)->data->CAN_EVOLVE == CANNOT_EVOLVE) {//pokemon cannot evolve
+        printf("Pokemon cannot evolve.\n");
+        return;
+    }
+    else if (searchPokemonBFS(owner->pokedexRoot, id)->data->CAN_EVOLVE == CAN_EVOLVE) { //pokemon can evolve
+        printf("Pokemon evolved from %s (ID %d) to %s (ID %d)\n", searchPokemonBFS(owner->pokedexRoot, id)->data->name, id,
+                                                                pokedex[id].name, id + 1);
+        owner->pokedexRoot = ReleasePokemon(owner->pokedexRoot, searchPokemonBFS(owner->pokedexRoot, id)->data); //case where evolving happens
+        owner->pokedexRoot = insertPokemonNode(owner->pokedexRoot, id + 1, 1);
+    }
 }

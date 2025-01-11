@@ -130,7 +130,7 @@ OwnerNode *createOwner(char *ownerName, PokemonNode *starter);
  * @param node pointer to node
  * Why we made it: Avoid memory leaks for single nodes.
  */
-PokemonNode* ReleasePokemon(PokemonNode **root, int pokemonId);
+PokemonNode* ReleasePokemon(PokemonNode *root, PokemonData *data);
 void freePokemonNode(PokemonNode *node);
 
 /**
@@ -158,7 +158,7 @@ void freeOwnerNode(OwnerNode *owner);
  * @return updated BST root
  * Why we made it: Standard BST insertion ignoring duplicates.
  */
-PokemonNode *insertPokemonNode(PokemonNode *newNode, int pokemonId);
+PokemonNode *insertPokemonNode(PokemonNode *newNode, int pokemonId, int subChoice);
 
 /**
  * @brief BFS search for a Pokemon by ID in the BST.
