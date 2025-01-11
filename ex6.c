@@ -286,10 +286,10 @@ void enterExistingPokedexMenu()
             freePokemon(current);
             break;
         case 4:
-            //pokemonFight(current);
+            pokemonFight(current);
             break;
         case 5:
-            //evolvePokemon(current);
+            evolvePokemon(current);
             break;
         case 6:
             printf("Back to Main Menu.\n");
@@ -667,4 +667,33 @@ PokemonNode *searchPokemonBFS(PokemonNode *root, int id) {
     if (root->data->id > id) //bigger search right
         return searchPokemonBFS(root->left, id);
     return searchPokemonBFS(root->right, id); //smaller search left
+}
+
+void pokemonFight(OwnerNode *owner) {
+    int id1, id2;
+    printf("Enter ID of the first Pokemon: \n");
+    id1 = readIntSafe("");
+    printf("Enter ID of the second Pokemon: \n");
+    id2 = readIntSafe("");
+    if (searchPokemonBFS(owner->pokedexRoot, id1) == NULL || searchPokemonBFS(owner->pokedexRoot, id2) == NULL) {
+        printf("One or both Pokemon IDs not found.\n");
+        return;
+    }
+    double score1, score2;
+    printf("Pokemon 1: %s ", searchPokemonBFS(owner->pokedexRoot, id1)->data->name);
+    score1 = searchPokemonBFS(owner->pokedexRoot, id1)->data->hp * 1.2 + searchPokemonBFS(owner->pokedexRoot, id1)->data->attack * 1.5;
+    printf("(Score = %.2f)\n", score1);
+    printf("Pokemon 2: %s ", searchPokemonBFS(owner->pokedexRoot, id2)->data->name);
+    score2 = searchPokemonBFS(owner->pokedexRoot, id2)->data->hp * 1.2 + searchPokemonBFS(owner->pokedexRoot, id2)->data->attack * 1.5;
+    printf("(Score = %.2f)\n", score2);
+    if (score1 > score2)
+        printf("%s wins!\n", searchPokemonBFS(owner->pokedexRoot, id1)->data->name);
+    else if (score2 > score1)
+        printf("%s wins!\n", searchPokemonBFS(owner->pokedexRoot, id2)->data->name);
+    else
+        printf("It's a tie!\n");
+}
+
+void evolvePokemon(OwnerNode *owner) {
+
 }
