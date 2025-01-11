@@ -132,7 +132,7 @@ OwnerNode *createOwner(char *ownerName, PokemonNode *starter);
  */
 PokemonNode* ReleasePokemon(PokemonNode *root, PokemonData *data);
 void freePokemonNode(PokemonNode *node);
-
+void FreeHead();
 /**
  * @brief Recursively free a BST of PokemonNodes.
  * @param root BST root

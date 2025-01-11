@@ -667,30 +667,39 @@ void freePokemonTree(PokemonNode *root) {
 void freeOwnerNode(OwnerNode *owner) { //how am i contring if the owner in the middle of the list?
     if (owner == NULL)
         return;
-    if (owner->next == NULL) { //if next one is NULL then put NULL in the current
-        owner->prev = owner->prev->prev; //and pointer to previous becomes previous before previous
-        freePokemonTree(owner->pokedexRoot);
-        free(owner->pokedexRoot);
-        free(owner->ownerName);
-        free(owner);
-        owner = NULL;//current becomes next ==NULL and before it becomes current i think
-        return;
-    } //if owner next not NULL then next becomes next after next
     if (owner == ownerHead) { //if deleteing from start of the list
-        owner->next = ownerHead;
+        ownerHead = owner->next; //owner head becomnes next one
+        ownerHead->prev = NULL; //owner previous null
         freePokemonTree(owner->pokedexRoot);
-        free(owner->pokedexRoot);
         free(owner->ownerName);
         free(owner);
         owner = NULL;
         return;
     }
-    owner->next = owner->next->next; //next owner in the list is the one that goes after the one that i'm deleting and if next NULL?
+    if (owner->next == NULL) { //if next one is NULL then put NULL in the current
+        owner->prev->next = NULL; //next pointer to previous becomes null
+        owner->prev = owner->prev->prev;//pointer to previous becomes previous before previous
+        freePokemonTree(owner->pokedexRoot);
+        free(owner->ownerName);
+        free(owner);
+        owner = NULL;
+        return;
+    } //if owner next not NULL then next becomes next after next
+    owner->prev->next = owner->next; //next after prev becomes next after current
+    owner->next->prev = owner->prev; //perv before next becomes prev after current
     freePokemonTree(owner->pokedexRoot);
-    free(owner->pokedexRoot);
     free(owner->ownerName);
     free(owner);
     owner = NULL;
+}
+
+void FreeHead() {
+    if (ownerHead == NULL)
+        return;
+    freePokemonTree(ownerHead->pokedexRoot);
+    free(ownerHead->ownerName);
+    free(ownerHead);
+    ownerHead = NULL;
 }
 
 void deletePokedex(void) {
@@ -714,7 +723,12 @@ void deletePokedex(void) {
         choice = readIntSafe("");
     }
     OwnerNode *current = ListLookUp(choice);
-    printf("Deleting %s's entire Pokedex...", current->ownerName);
+    printf("Deleting %s's entire Pokedex...\n", current->ownerName);
+    if (current == ownerHead && current->next == NULL) {
+        FreeHead();
+        printf("Pokedex deleted.\n");
+        return;
+    }
     freeOwnerNode(current);
     printf("Pokedex deleted.\n");
 }
