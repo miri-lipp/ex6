@@ -844,9 +844,29 @@ void MergePokedexMenu(void) {
     owner1 = getDynamicInput();
     printf("Enter name of second owner: \n");
     owner2 = getDynamicInput();
-    printf("Merging %s and %s...\n", owner1, owner2);
+    if (FindOwnerByName(owner1)->pokedexRoot == NULL || FindOwnerByName(owner2)->pokedexRoot == NULL) {
+        printf("Pokedex is empty.\n");
+    }
+    printf("Merging %s and %s...\n", FindOwnerByName(owner1)->ownerName, FindOwnerByName(owner2)->ownerName);
+    //i need to add all of the stuff from the second one and if it exists then it wouldn't be added
+    //i need something like owner->pokemonroot = inseart(search) but for actually how long? for every pokemon????
+    for (int i = 1; i <= 151; i++) {//i made some shit????
+        if (SearchPokemonBFS(FindOwnerByName(owner2)->pokedexRoot, i) != NULL)
+            FindOwnerByName(owner1)->pokedexRoot = InsertPokemonNode(FindOwnerByName(owner1)->pokedexRoot,
+                SearchPokemonBFS(FindOwnerByName(owner2)->pokedexRoot, i)->data->id, 0);
+    }//i have no idea how to optimise this shit
+    printf("Merge completed.\n");
+    FreeOwnerNode(FindOwnerByName(owner2));
+    printf("Owner '%s' has been removed after merging.", owner2);
 }
 
 OwnerNode *FindOwnerByName(const char *name) {
-
+    OwnerNode *owner = ownerHead;
+    while (owner != NULL) {
+        if (strcmp(owner->ownerName, name) == 0)
+            return owner;
+        owner = owner->next;
+    }
+    return NULL;
 }
+
