@@ -210,7 +210,7 @@ void BFSGeneric(PokemonNode *root, VisitNodeFunc visit);
  * @param visit function pointer
  * Why we made it: Another demonstration of function-pointer-based traversal.
  */
-void PreOrderGeneric(PokemonNode *root, VisitNodeFunc visit);
+void preOrderGeneric(PokemonNode *root, VisitNodeFunc visit);
 
 /**
  * @brief A generic in-order traversal (Left-Root-Right).
@@ -218,7 +218,7 @@ void PreOrderGeneric(PokemonNode *root, VisitNodeFunc visit);
  * @param visit function pointer
  * Why we made it: Great for seeing sorted order if BST is sorted by ID.
  */
-void InOrderGeneric(PokemonNode *root, VisitNodeFunc visit);
+void inOrderGeneric(PokemonNode *root, VisitNodeFunc visit);
 
 /**
  * @brief A generic post-order traversal (Left-Right-Root).
@@ -226,7 +226,7 @@ void InOrderGeneric(PokemonNode *root, VisitNodeFunc visit);
  * @param visit function pointer
  * Why we made it: Another standard traversal pattern.
  */
-void PostOrderGeneric(PokemonNode *root, VisitNodeFunc visit);
+void postOrderGeneric(PokemonNode *root, VisitNodeFunc visit);
 
 /**
  * @brief Print one PokemonNode’s data: ID, Name, Type, HP, Attack, Evolve?

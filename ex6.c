@@ -518,40 +518,40 @@ void PrintLevel(PokemonNode *root, int level, VisitNodeFunc visit) {
     PrintLevel(root->right, level - 1, visit);
 }
 
-void PreOrderGeneric(PokemonNode *root, VisitNodeFunc visit) {
+void preOrderGeneric(PokemonNode *root, VisitNodeFunc visit) {
     if (root == NULL)
         return;
     visit(root);
-    PreOrderGeneric(root->left, visit);
-    PreOrderGeneric(root->right, visit);
+    preOrderGeneric(root->left, visit);
+    preOrderGeneric(root->right, visit);
 }
 
 void PreOrderTraversal(PokemonNode *root) {
-    PreOrderGeneric(root, PrintPokemon);
+    preOrderGeneric(root, PrintPokemon);
 }
 
-void InOrderGeneric(PokemonNode *root, VisitNodeFunc visit) {
+void inOrderGeneric(PokemonNode *root, VisitNodeFunc visit) {
     if (root == NULL)
         return;
-    InOrderGeneric(root->left, visit);
+    inOrderGeneric(root->left, visit);
     visit(root);
-    InOrderGeneric(root->right, visit);
+    inOrderGeneric(root->right, visit);
 }
 
 void InOrderTraversal(PokemonNode *root) {
-    InOrderGeneric(root, PrintPokemon);
+    inOrderGeneric(root, PrintPokemon);
 }
 
-void PostOrderGeneric(PokemonNode *root, VisitNodeFunc visit) {
+void postOrderGeneric(PokemonNode *root, VisitNodeFunc visit) {
     if (root == NULL)
         return;
-    PostOrderGeneric(root->left, visit);
-    PostOrderGeneric(root->right, visit);
+    postOrderGeneric(root->left, visit);
+    postOrderGeneric(root->right, visit);
     visit(root);
 }
 
 void PostOrderTraversal(PokemonNode *root) {
-    PostOrderGeneric(root, PrintPokemon);
+    postOrderGeneric(root, PrintPokemon);
 }
 
 void DisplayAlphabetical(PokemonNode *root) {
