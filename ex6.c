@@ -191,25 +191,12 @@ char *getDynamicInput()
 }
 
 // Function to print a single Pokemon node
-void printPokemonNode(PokemonNode *node)
-{
-    if (!node)
-        return;
-    printf("ID: %d, Name: %s, Type: %s, HP: %d, Attack: %d, Can Evolve: %s\n",
-           node->data->id,
-           node->data->name,
-           getTypeName(node->data->TYPE),
-           node->data->hp,
-           node->data->attack,
-           (node->data->CAN_EVOLVE == CAN_EVOLVE) ? "Yes" : "No");
-}
-
 // --------------------------------------------------------------
 // Display Menu
 // --------------------------------------------------------------
 void displayMenu(OwnerNode *owner)
 {
-    if (!owner->pokedexRoot)
+    if (owner->pokedexRoot == NULL)
     {
         printf("Pokedex is empty.\n");
         return;
@@ -296,7 +283,7 @@ void enterExistingPokedexMenu()
             displayMenu(current);
             break;
         case 3:
-            //freePokemon(current);
+            freePokemon(current);
             break;
         case 4:
             //pokemonFight(current);
@@ -592,7 +579,7 @@ int compareByNameNode(const void *a, const void *b) { //how the fuck do i implem
     PokemonNode *nodeB = *(PokemonNode **)b;
     return strcmp(nodeA->data->name, nodeB->data->name);
 }
-
+// Function to print a single Pokemon node
 void PrintPokemon(PokemonNode *root) {
     printf("ID: %d, ", root->data->id);
     printf("Name: %s, ", root->data->name);
@@ -603,4 +590,81 @@ void PrintPokemon(PokemonNode *root) {
         printf("Can Evolve: No\n");
     else
         printf("Can Evolve: Yes\n");
+}
+void freePokemon(OwnerNode *owner) {
+    int pokemonId = 0;
+    if (owner->pokedexRoot == NULL) {
+        printf("No Pokemon to release.\n");
+        return;
+    }
+    printf("Enter Pokemon ID to release:\n");
+    pokemonId = readIntSafe("");
+    if (pokemonId <= 0 || pokemonId > 151) {
+        printf("Invalid choice.\n");
+        return;
+    }
+    if (searchPokemonBFS(owner->pokedexRoot, pokemonId) == NULL) {
+        printf("No Pokemon with ID %d found.\n", pokemonId);
+        return;
+    }
+    printf("Removing Pokemon %s (ID %d)\n", owner->pokedexRoot->data->name, pokemonId);
+    owner->pokedexRoot = ReleasePokemon(&owner->pokedexRoot, pokemonId);
+}
+
+PokemonNode* ReleasePokemon(PokemonNode **root, int pokemonId) {
+    PokemonNode *node = *root;
+    if (pokemonId < node->data->id) {
+        //going left
+        printf("Going left: Current Node ID: %d\n", node->data->id);
+        return ReleasePokemon(&node->left, pokemonId);
+    }
+    if (pokemonId > node->data->id) {
+        //going right
+        printf("Going right: Current Node ID: %d\n", node->data->id);
+        return ReleasePokemon(&node->right, pokemonId);
+    }
+    else { //else if one child
+        printf("Found Pokemon to delete: ID %d, Name: %s\n", node->data->id, node->data->name);
+        PokemonNode *temp = NULL;
+        if (!node->left) {
+            //if there is only left node
+            temp = node->right;
+            printf("Node has no left child. Replacing with right child.\n");
+            free(node);
+            *root = temp;
+            return *root;
+        }
+        if (!node->right) {
+            temp = node->left;
+            printf("Node has no right child. Replacing with left child.\n");
+            free(node);
+            *root = temp;
+            return *root;
+        }
+        temp = FindMax(node->left); //find maximum in bst
+        printf("Node has two children. Replacing with max from left subtree: ID %d, Name: %s\n",
+               temp->data->id, temp->data->name);
+        node->data = temp->data; //replace everything
+        return ReleasePokemon(&temp->right, temp->data->id); //release temp
+    }
+}
+
+PokemonNode* FindMax(PokemonNode *root) {
+    while (root && root->right)
+        root = root->right;
+    return root;
+}
+
+void freePokemonNode(PokemonNode *node) {
+    if (node == NULL)
+        return;
+    freePokemonNode(node->right);
+}
+
+PokemonNode *searchPokemonBFS(PokemonNode *root, int id) {
+    if (root == NULL || root->data->id == id)
+        return root;
+    if (root->data->id > id) //bigger search right
+        return searchPokemonBFS(root->left, id);
+    return searchPokemonBFS(root->right, id); //smaller search left
 }

@@ -130,6 +130,7 @@ OwnerNode *createOwner(char *ownerName, PokemonNode *starter);
  * @param node pointer to node
  * Why we made it: Avoid memory leaks for single nodes.
  */
+PokemonNode* ReleasePokemon(PokemonNode **root, int pokemonId);
 void freePokemonNode(PokemonNode *node);
 
 /**
@@ -345,6 +346,7 @@ void addPokemon(OwnerNode *owner);
  * Why we made it: Another user function for releasing a Pokemon.
  */
 void freePokemon(OwnerNode *owner);
+PokemonNode* FindMax(PokemonNode *root);
 
 /* ------------------------------------------------------------
    7) Display Menu for a Pokedex
