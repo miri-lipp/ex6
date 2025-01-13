@@ -62,6 +62,18 @@ typedef struct OwnerNode
 // Global head pointer for the linked list of owners
 OwnerNode *ownerHead = NULL;
 
+typedef struct QueueNode //structy for storing pointers to tree
+{
+   PokemonNode *node;
+   struct QueueNode *next;
+}QueueNode;
+
+typedef struct Queue //struct for queue
+{
+   struct QueueNode *front;
+   struct QueueNode *rear;
+} Queue;
+
 /* ------------------------------------------------------------
    1) Safe Input + Utility
    ------------------------------------------------------------ */
@@ -124,7 +136,7 @@ PokemonNode *CreatePokemonNode(const PokemonData *data); //i actually accidental
  * Why we made it: Each user is represented as an OwnerNode.
  */
 //OwnerNode *createOwner(char *ownerName);
-
+void AddOwner(OwnerNode *owner, PokemonNode *node);
 /**
  * @brief Free one PokemonNode (including name).
  * @param node pointer to node
@@ -168,6 +180,10 @@ PokemonNode *InsertPokemonNode(PokemonNode *newNode, int pokemonId, int subChoic
  * Why we made it: BFS ensures we find nodes even in an unbalanced tree.
  */
 PokemonNode *SearchPokemonBFS(PokemonNode *root, int id);
+
+Queue *CreateQueue();
+void Enqueue(Queue *queue, PokemonNode *node);
+PokemonNode *Dequeue(Queue *queue);
 
 /**
  * @brief Remove node from BST by ID if found (BST removal logic).
@@ -285,15 +301,16 @@ int CompareByNameNode(const void *a, const void *b);
  * Why we made it: Provide user the option to see Pokemon sorted by name.
  */
 void DisplayAlphabetical(PokemonNode *root);
-
+void QuickSort(NodeArray pokemons, int low, int high);
+int Partition(NodeArray **pokemons, int low, int high);
+void Swap(NodeArray **a, NodeArray **b);
 /**
  * @brief BFS user-friendly display (level-order).
  * @param root BST root
  * Why we made it: Quick listing in BFS order.
  */
 void DisplayBFS(PokemonNode *root);
-int Height(PokemonNode *node);
-void PrintLevel(PokemonNode *root, int level, VisitNodeFunc visit);
+
 /**
  * @brief Pre-order user-friendly display (Root->Left->Right).
  * @param root BST root
@@ -450,6 +467,7 @@ void PrintOwnersCircular(void);
  * Why we made it: Ensures a squeaky-clean exit with no leftover memory.
  */
 void FreeAllOwners(void);
+void DeleteQueue(Queue *queue);
 
 /* ------------------------------------------------------------
    13) The Main Menu

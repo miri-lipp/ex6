@@ -377,11 +377,11 @@ void OpenPokedexMenu(void) {
         printf("New Pokedex created for %s with starter %s.\n",ownerHead->ownerName, ownerHead->pokedexRoot->data->name);
     }
     else { //same thing but when linked list is not empty
-        LinkOwnerInCircularList(owner, node);
+        AddOwner(owner, node);
     }
 }
 
-void LinkOwnerInCircularList(OwnerNode *owner, PokemonNode *node) {//same thing but when linked list is not empty
+void AddOwner(OwnerNode *owner, PokemonNode *node) {//same thing but when linked list is not empty
         OwnerNode *current = ownerHead;
         owner->ownerName = getDynamicInput();
         owner->prev = NULL;
@@ -488,34 +488,64 @@ PokemonNode *InsertPokemonNode(PokemonNode *newNode, int pokemonId, int subChoic
     return newNode;
 }
 
-void BFSGeneric(PokemonNode *root, VisitNodeFunc visit) {
-    int h = Height(root);
-    for (int i = 1; i <= h; i++) {
-        PrintLevel(root, i, visit);
+Queue *CreateQueue() {
+    Queue *queue = (Queue *)malloc(sizeof(Queue));
+    if (queue == NULL) {
+        printf("Memory allocation failed.\n");
+        exit(1);
     }
+    queue->front = queue->rear = NULL;
+    return queue;
+}
+
+void Enqueue(Queue *queue, PokemonNode *node) { //function to add elements to queue list
+    QueueNode *newNode = (QueueNode *)malloc(sizeof(QueueNode));
+    if (newNode == NULL) {
+        printf("Memory allocation failed.\n");
+        exit(1);
+    }
+    newNode->node = node; //adding pointer of the tree to queue
+    newNode->next = NULL; //next element in queue is NULL
+    if (queue->front == NULL) { //if last element of the queue is NULL means that queue is empty and pointer to the first element is the same as last one
+        queue->front = queue->rear = newNode;
+        return;
+    }
+    //else if queue is not empty i need to add next element to the next after last because first in first out !
+    queue->rear->next = newNode;
+    queue->rear = newNode; //updating the last element of the queue
+}
+
+PokemonNode *Dequeue(Queue *queue) {
+    if (queue->front == NULL) {
+        return NULL;
+    }//i need to do it first in first out
+    QueueNode *temp = queue->front;
+    PokemonNode *node = temp->node;
+    queue->front = queue->front->next; //first in first out babyyyy
+    if (queue->front == NULL)
+        queue->rear = NULL; //if queue is empty
+    free(temp);
+    return node;
+}
+
+void BFSGeneric(PokemonNode *root, VisitNodeFunc visit) {
+    if (root == NULL)
+        return;
+    Queue *queue = CreateQueue();//creating queue
+    Enqueue(queue, root);//adding root to queue
+    while (queue->front != NULL) {
+        PokemonNode *node = Dequeue(queue); //deleting from queue
+        visit(node);
+        if (node->left != NULL)
+            Enqueue(queue, node->left);
+        if (node->right != NULL)
+            Enqueue(queue, node->right);
+    }
+    free(queue);
 }
 
 void DisplayBFS(PokemonNode *root) {
     BFSGeneric(root, PrintPokemon);
-}
-//need to find *height* of a tree
-int Height(PokemonNode *node) {
-    if (node == NULL)
-        return 0;
-    int leftHeight = Height(node->left); //height of left nodes
-    int rightHeight = Height(node->right); //height of right nodes
-    if (leftHeight > rightHeight) //if left node is bigger than right return leftheight + 1
-        return leftHeight + 1;
-    return rightHeight + 1;//else return rightheight + 1
-}
-
-void PrintLevel(PokemonNode *root, int level, VisitNodeFunc visit) {
-    if (root == NULL)
-        return;
-    if (level == 1)
-        visit(root);
-    PrintLevel(root->left, level - 1, visit);
-    PrintLevel(root->right, level - 1, visit);
 }
 
 void preOrderGeneric(PokemonNode *root, VisitNodeFunc visit) {
@@ -559,9 +589,44 @@ void DisplayAlphabetical(PokemonNode *root) {
     InitNodeArray(&pokemons, 1);
     //printf("Adding Pokemon ID: %d, Name: %s to NodeArray.\n", root->data->id, root->data->name);
     CollectAll(root, &pokemons);
-    qsort(pokemons.nodes,pokemons.size, sizeof(PokemonNode*), CompareByNameNode);
+    //qsort(pokemons.nodes, pokemons.size, sizeof(PokemonNode*), CompareByNameNode);
+    int n = sizeof(pokemons)/sizeof(pokemons.nodes[0]);
+    QuickSort(pokemons, 0, n - 1);
     for (int i = 0; i < pokemons.size; i++) {
         PrintPokemon(pokemons.nodes[i]);
+    }
+}
+
+int Partition(NodeArray **pokemons, int low, int high) {
+    NodeArray *pivot = pokemons[high];
+    int i = low;
+    int j = high;
+    while (i < j) {
+        while (CompareByNameNode(pokemons[i], pivot) == (-1 || 0) && i < high - 1) {
+            i++;
+        }
+        while (CompareByNameNode(pokemons[j], pivot) == 1 && j > low + 1) {
+            j--;
+        }
+        if (i < j) {
+            Swap(&pokemons[i], &pokemons[j]);
+        }
+    }
+    Swap(&pokemons[low], &pokemons[j]);
+    return j;
+}
+
+void Swap(NodeArray **a, NodeArray **b) {
+    NodeArray *temp = *a;
+    *a = *b;
+    *b = temp;
+}
+
+void QuickSort(NodeArray pokemons, int low, int high) {
+    if (low < high) {
+        int pivot = Partition(&pokemons, low, high);
+        QuickSort(pokemons, low, pivot - 1);
+        QuickSort(pokemons, pivot + 1, high);
     }
 }
 
@@ -615,6 +680,7 @@ void PrintPokemon(PokemonNode *root) {
     else
         printf("Can Evolve: Yes\n");
 }
+
 void FreePokemon(OwnerNode *owner) {
     int pokemonId = 0;
     if (owner->pokedexRoot == NULL) {
@@ -689,7 +755,7 @@ void FreeOwnerNode(OwnerNode *owner) { //how am i contring if the owner in the m
         return;
     if (owner == ownerHead) { //if deleteing from start of the list
         ownerHead = owner->next; //owner head becomnes next one
-        ownerHead->prev = NULL; //owner previous null
+        ownerHead->prev = NULL; //owner previous null IT WON'T BE NULL
         FreePokemonTree(owner->pokedexRoot);
         free(owner->ownerName);
         free(owner);
@@ -754,11 +820,30 @@ void DeletePokedex(void) {
 }
 
 PokemonNode *SearchPokemonBFS(PokemonNode *root, int id) {
-    if (root == NULL || root->data->id == id)
-        return root;
-    if (root->data->id > id) //bigger search right
-        return SearchPokemonBFS(root->left, id);
-    return SearchPokemonBFS(root->right, id); //smaller search left
+    if (root == NULL)
+        return NULL;
+    Queue *queue = CreateQueue();//creating queue
+    Enqueue(queue, root);//adding root to queue
+    while (queue->front != NULL) {
+        PokemonNode *node = Dequeue(queue);
+        if (node->data->id == id) {
+            while (queue->front != NULL) {
+                Dequeue(queue);
+            }
+            free(queue);
+            return node;
+        }
+        if (node->left != NULL) {
+           // printf("node left id: %d\n", node->left->data->id);
+            Enqueue(queue, node->left);
+        }
+        if (node->right != NULL) {
+           // printf("node right id: %d\n", node->right->data->id);
+            Enqueue(queue, node->right);
+        }
+    }
+    free(queue);
+    return NULL;
 }
 
 void PokemonFight(OwnerNode *owner) {
@@ -850,11 +935,11 @@ void MergePokedexMenu(void) {
     printf("Merging %s and %s...\n", FindOwnerByName(owner1)->ownerName, FindOwnerByName(owner2)->ownerName);
     //i need to add all of the stuff from the second one and if it exists then it wouldn't be added
     //i need something like owner->pokemonroot = inseart(search) but for actually how long? for every pokemon????
-    for (int i = 1; i <= 151; i++) {//i made some shit????
-        if (SearchPokemonBFS(FindOwnerByName(owner2)->pokedexRoot, i) != NULL)
-            FindOwnerByName(owner1)->pokedexRoot = InsertPokemonNode(FindOwnerByName(owner1)->pokedexRoot,
-                SearchPokemonBFS(FindOwnerByName(owner2)->pokedexRoot, i)->data->id, 0);
-    }//i have no idea how to optimise this shit
+    // for (int i = 1; i <= 151; i++) {//i made some shit????
+    //     if (SearchPokemonBFS(FindOwnerByName(owner2)->pokedexRoot, i) != NULL)
+    //         FindOwnerByName(owner1)->pokedexRoot = InsertPokemonNode(FindOwnerByName(owner1)->pokedexRoot,
+    //             SearchPokemonBFS(FindOwnerByName(owner2)->pokedexRoot, i)->data->id, 0);
+    // }//i have no idea how to optimise this shit
     printf("Merge completed.\n");
     FreeOwnerNode(FindOwnerByName(owner2));
     printf("Owner '%s' has been removed after merging.", owner2);
