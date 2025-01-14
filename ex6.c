@@ -590,36 +590,35 @@ void DisplayAlphabetical(PokemonNode *root) {
     //printf("Adding Pokemon ID: %d, Name: %s to NodeArray.\n", root->data->id, root->data->name);
     CollectAll(root, &pokemons);
     //qsort(pokemons.nodes, pokemons.size, sizeof(PokemonNode*), CompareByNameNode);
-    int n = sizeof(pokemons)/sizeof(pokemons.nodes[0]);
-    QuickSort(pokemons, 0, n - 1);
+    QuickSort(pokemons, 0, pokemons.size - 1);
     for (int i = 0; i < pokemons.size; i++) {
         PrintPokemon(pokemons.nodes[i]);
     }
 }
 
-int Partition(NodeArray **pokemons, int low, int high) {
-    NodeArray *pivot = pokemons[high];
+int Partition(NodeArray *pokemons, int low, int high) {
+    PokemonNode *pivot = pokemons->nodes[high];
     int i = low;
     int j = high;
     while (i < j) {
-        while (CompareByNameNode(pokemons[i], pivot) == (-1 || 0) && i < high - 1) {
+        while (CompareByNameNode(pokemons->nodes[i], pivot) == (-1 || 0) && i < high - 1) {
             i++;
         }
-        while (CompareByNameNode(pokemons[j], pivot) == 1 && j > low + 1) {
+        while (CompareByNameNode(pokemons->nodes[j], pivot) == 1 && j > low + 1) {
             j--;
         }
         if (i < j) {
-            Swap(&pokemons[i], &pokemons[j]);
+            Swap(pokemons->nodes[i], pokemons->nodes[j]);
         }
     }
-    Swap(&pokemons[low], &pokemons[j]);
+    Swap(pokemons->nodes[low], pokemons->nodes[j]);
     return j;
 }
 
-void Swap(NodeArray **a, NodeArray **b) {
-    NodeArray *temp = *a;
+void Swap(PokemonNode *a, PokemonNode *b) {
+    PokemonNode *temp = a;
     *a = *b;
-    *b = temp;
+    *b = *temp;
 }
 
 void QuickSort(NodeArray pokemons, int low, int high) {

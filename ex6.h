@@ -302,8 +302,8 @@ int CompareByNameNode(const void *a, const void *b);
  */
 void DisplayAlphabetical(PokemonNode *root);
 void QuickSort(NodeArray pokemons, int low, int high);
-int Partition(NodeArray **pokemons, int low, int high);
-void Swap(NodeArray **a, NodeArray **b);
+int Partition(NodeArray *pokemons, int low, int high);
+void Swap(PokemonNode *a, PokemonNode *b);
 /**
  * @brief BFS user-friendly display (level-order).
  * @param root BST root
