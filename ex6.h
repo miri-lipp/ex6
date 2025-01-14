@@ -301,7 +301,7 @@ int CompareByNameNode(const void *a, const void *b);
  * Why we made it: Provide user the option to see Pokemon sorted by name.
  */
 void DisplayAlphabetical(PokemonNode *root);
-void QuickSort(NodeArray pokemons, int low, int high);
+void QuickSort(NodeArray *pokemons, int low, int high);
 int Partition(NodeArray *pokemons, int low, int high);
 void Swap(PokemonNode *a, PokemonNode *b);
 /**
@@ -364,6 +364,7 @@ void AddPokemon(OwnerNode *owner);
  */
 void FreePokemon(OwnerNode *owner);
 PokemonNode* FindMax(PokemonNode *root);
+void FreeNodeArray(NodeArray *na);
 
 /* ------------------------------------------------------------
    7) Display Menu for a Pokedex
@@ -430,6 +431,7 @@ OwnerNode *FindOwnerByName(const char *name); //this i def need for merging
 PokemonNode *StarterPokemon(PokemonNode *node);
 void EnterExistingPokedexMenu(void);
 OwnerNode *ListLookUp(int choice);
+PokemonNode *MergeTrees(PokemonNode *root1);
 /**
  * @brief Creates a new Pokedex (prompt for name, check uniqueness, choose starter).
  * Why we made it: The main entry for building a brand-new Pokedex.

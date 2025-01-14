@@ -590,22 +590,25 @@ void DisplayAlphabetical(PokemonNode *root) {
     //printf("Adding Pokemon ID: %d, Name: %s to NodeArray.\n", root->data->id, root->data->name);
     CollectAll(root, &pokemons);
     //qsort(pokemons.nodes, pokemons.size, sizeof(PokemonNode*), CompareByNameNode);
-    QuickSort(pokemons, 0, pokemons.size - 1);
+    QuickSort(&pokemons, 0, pokemons.size - 1);
     for (int i = 0; i < pokemons.size; i++) {
         PrintPokemon(pokemons.nodes[i]);
     }
+    FreeNodeArray(&pokemons);
 }
 
 int Partition(NodeArray *pokemons, int low, int high) {
-    PokemonNode *pivot = pokemons->nodes[high];
-    int i = low;
-    int j = high;
+    PokemonNode *pivot = pokemons->nodes[low];//pivot the last element of the array
+    int i = low; //i = 0
+    int j = high; //j = num of last element
     while (i < j) {
-        while (CompareByNameNode(pokemons->nodes[i], pivot) == (-1 || 0) && i < high - 1) {
-            i++;
+        //printf("Pokemon name %s\n", pokemons->nodes[i]->data->name);
+       // printf("Pivot name %s\n", pivot->data->name);
+        while (CompareByNameNode(&pokemons->nodes[i], &pivot) <= 0 && i < high) {
+            i++; //compare node i and last element till i last el before previous
         }
-        while (CompareByNameNode(pokemons->nodes[j], pivot) == 1 && j > low + 1) {
-            j--;
+        while (CompareByNameNode(&pokemons->nodes[j], &pivot) > 0 && j > low) {
+            j--; //compare node j and last element till j larger then 2 el in array
         }
         if (i < j) {
             Swap(pokemons->nodes[i], pokemons->nodes[j]);
@@ -616,14 +619,14 @@ int Partition(NodeArray *pokemons, int low, int high) {
 }
 
 void Swap(PokemonNode *a, PokemonNode *b) {
-    PokemonNode *temp = a;
+    PokemonNode temp = *a;
     *a = *b;
-    *b = *temp;
+    *b = temp;
 }
 
-void QuickSort(NodeArray pokemons, int low, int high) {
+void QuickSort(NodeArray *pokemons, int low, int high) {
     if (low < high) {
-        int pivot = Partition(&pokemons, low, high);
+        int pivot = Partition(pokemons, low, high);
         QuickSort(pokemons, low, pivot - 1);
         QuickSort(pokemons, pivot + 1, high);
     }
@@ -635,6 +638,14 @@ void InitNodeArray(NodeArray *na, int cap) {
         printf("Memory allocation failed.\n");
         exit(1);
     }
+    na->size = 0;
+    na->capacity = cap;
+}
+
+void FreeNodeArray(NodeArray *na) {
+    printf("Freeing NodeArray with size: %d and capacity: %d\n", na->size, na->capacity);
+    free(na->nodes);
+    na->nodes = NULL;
     na->size = 0;
 }
 
@@ -663,9 +674,9 @@ void CollectAll(PokemonNode *root, NodeArray *na) { //bro i'm trying to destroy 
 }
 
 int CompareByNameNode(const void *a, const void *b) { //how the fuck do i implement qsort here?
-    PokemonNode *nodeA = *(PokemonNode **)a;
-    PokemonNode *nodeB = *(PokemonNode **)b;
-    return strcmp(nodeA->data->name, nodeB->data->name);
+    PokemonNode *NodeA = *(PokemonNode **)a;
+    PokemonNode *NodeB = *(PokemonNode **)b;
+    return strcmp(NodeA->data->name, NodeB->data->name);
 }
 // Function to print a single Pokemon node
 void PrintPokemon(PokemonNode *root) {
@@ -942,6 +953,23 @@ void MergePokedexMenu(void) {
     printf("Merge completed.\n");
     FreeOwnerNode(FindOwnerByName(owner2));
     printf("Owner '%s' has been removed after merging.", owner2);
+}
+
+PokemonNode *MergeTrees(PokemonNode *root1, PokemonNode *root2) {
+    //need to traverse in queue with bfs and inseart into tree
+    if (root1 == NULL)
+        return NULL;
+    Queue *queue = CreateQueue();//creating queue
+    Enqueue(queue, root1);//adding root to queue
+    while (queue->front != NULL) {
+        root2 = InsertPokemonNode(root1, root1->data->id, 0);
+        PokemonNode *node = Dequeue(queue); //deleting from queue
+        if (node->left != NULL)
+            Enqueue(queue, node->left);
+        if (node->right != NULL)
+            Enqueue(queue, node->right);
+    }
+    free(queue);
 }
 
 OwnerNode *FindOwnerByName(const char *name) {
