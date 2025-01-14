@@ -61,6 +61,7 @@ typedef struct OwnerNode
 
 // Global head pointer for the linked list of owners
 OwnerNode *ownerHead = NULL;
+OwnerNode **ownerNames = NULL; //global pointer to array from struct because it told me that i have memory leaked if i did it directly from function
 
 typedef struct QueueNode //structy for storing pointers to tree
 {
@@ -385,7 +386,7 @@ void DisplayMenu(OwnerNode *owner);
  * Why we made it: Another demonstration of pointer manipulation + sorting logic.
  */
 void SortOwners(void); //sort
-void InitOwnerArray(OwnerNode *owner, char **ownerNames, int *size);
+OwnerNode** InitOwnerArray(OwnerNode *owner, int *size);
 int CompareByNameOwners(const void *a, const void *b);
 /**
  * @brief Helper to swap name & pokedexRoot in two OwnerNode.
@@ -393,6 +394,7 @@ int CompareByNameOwners(const void *a, const void *b);
  * @param b pointer to second owner
  * Why we made it: Used internally by bubble sort to swap data.
  */
+void BubbleSort(OwnerNode **ownerNames, int *size);
 void SwapOwnerData(OwnerNode *a, OwnerNode *b); //for sorting list
 /* ------------------------------------------------------------
    9) Circular List Linking & Searching

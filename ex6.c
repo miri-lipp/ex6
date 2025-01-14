@@ -336,7 +336,7 @@ void MainMenu()
             SortOwners();
             break;
         case 6:
-            //printOwnersCircular();
+            PrintOwnersCircular();
             break;
         case 7:
             printf("Goodbye!\n");
@@ -987,37 +987,81 @@ void SortOwners(void) {//i'm guessing i need to put list in the array dymanicall
         printf("No existing owners.\n");
         return;
     }
-    char **ownerNames = NULL;
     int size = 0;
-    InitOwnerArray(ownerHead, ownerNames, &size);
-    //i really don't want to rewrite quicksort maybe later i can make it generic but for now i'll do qsort
-    qsort(ownerNames, size, sizeof(char *), CompareByNameOwners);
+    ownerNames = InitOwnerArray(ownerHead, &size);
+    //i will scream i swear i will
+    BubbleSort(ownerNames, &size); //putting everything back in the list?
+    OwnerNode *owner = ownerHead;
+    for (int i = 0; i < size; i++) {
+        owner->ownerName = ownerNames[i]->ownerName;
+        owner->pokedexRoot = ownerNames[i]->pokedexRoot;
+        owner = owner->next;
+    }
+    printf("Owners sorted by name.");
+    free(ownerNames); //freeing array
 }
 
-void InitOwnerArray(OwnerNode *owner, char **ownerNames, int *size) { //array of owner names i hope
+OwnerNode** InitOwnerArray(OwnerNode *owner, int *size) { //array of owner names i hope
     int capacity = 10;
-    ownerNames = malloc(sizeof(char *) * capacity);
+    ownerNames = malloc(sizeof(OwnerNode *) * capacity);
     if (ownerNames == NULL) {
         printf("Memory allocation error.\n");
         exit(1);
     }
     while (owner != NULL) {
-        ownerNames[*size] = owner->ownerName;
-        *size++;
-        owner = owner->next;
-        if (*size > capacity) {
+        if (*size >= capacity) {
             capacity *= 2;
-            ownerNames = realloc(ownerNames, sizeof(char *) * capacity);
+            ownerNames = realloc(ownerNames, sizeof(OwnerNode *) * capacity);
             if (ownerNames == NULL) {
                 printf("Memory allocation error.\n");
                 exit(1);
             }
         }
+        ownerNames[*size] = owner;
+        (*size)++;
+        owner = owner->next;
     }
+    return ownerNames;
+}
+
+void BubbleSort(OwnerNode **ownerNames, int *size) {
+    for (int i = 0; i < *size - 1; i++) {
+        for (int j = 0; j < *size - i - 1; j++) {
+            if (CompareByNameOwners(&ownerNames[j]->ownerName, &ownerNames[j + 1]->ownerName) > 0) {
+                SwapOwnerData(ownerNames[j], ownerNames[j + 1]);
+            }
+        }
+    }
+}
+
+void SwapOwnerData(OwnerNode *a, OwnerNode *b) { //mega swap
+    PokemonNode *temp = a->pokedexRoot;
+    a->pokedexRoot = b->pokedexRoot;
+    b->pokedexRoot = temp;
+    char *temp2 = a->ownerName;
+    a->ownerName = b->ownerName;
+    b->ownerName = temp2;
 }
 
 int CompareByNameOwners(const void *a, const void *b) {
     char *name1 = *(char **)a;
     char *name2 = *(char **)b;
     return strcmp(name1, name2);
+}
+
+void PrintOwnersCircular(void) {
+    printf("Enter direction (F or B):\n");
+    char direction;
+    scanf(" %c", &direction);
+    if (direction != 'F' || direction != 'B' || direction != 'f' || direction != 'b') {
+        printf("Invalid direction.\n");
+        return;
+    }
+    printf("How many prints?\n");
+    int num = readIntSafe("");
+
+}
+
+void LinkOwnerInCircularList(OwnerNode *owner, PokemonNode *node) {
+
 }
