@@ -385,7 +385,8 @@ void DisplayMenu(OwnerNode *owner);
  * Why we made it: Another demonstration of pointer manipulation + sorting logic.
  */
 void SortOwners(void); //sort
-
+void InitOwnerArray(OwnerNode *owner, char **ownerNames, int *size);
+int CompareByNameOwners(const void *a, const void *b);
 /**
  * @brief Helper to swap name & pokedexRoot in two OwnerNode.
  * @param a pointer to first owner
@@ -431,7 +432,7 @@ OwnerNode *FindOwnerByName(const char *name); //this i def need for merging
 PokemonNode *StarterPokemon(PokemonNode *node);
 void EnterExistingPokedexMenu(void);
 OwnerNode *ListLookUp(int choice);
-PokemonNode *MergeTrees(PokemonNode *root1);
+PokemonNode *MergeTrees(PokemonNode *root1, PokemonNode *root2);
 /**
  * @brief Creates a new Pokedex (prompt for name, check uniqueness, choose starter).
  * Why we made it: The main entry for building a brand-new Pokedex.

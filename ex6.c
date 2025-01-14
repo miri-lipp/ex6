@@ -333,7 +333,7 @@ void MainMenu()
             MergePokedexMenu();
             break;
         case 5:
-            //sortOwners();
+            SortOwners();
             break;
         case 6:
             //printOwnersCircular();
@@ -945,31 +945,31 @@ void MergePokedexMenu(void) {
     printf("Merging %s and %s...\n", FindOwnerByName(owner1)->ownerName, FindOwnerByName(owner2)->ownerName);
     //i need to add all of the stuff from the second one and if it exists then it wouldn't be added
     //i need something like owner->pokemonroot = inseart(search) but for actually how long? for every pokemon????
-    // for (int i = 1; i <= 151; i++) {//i made some shit????
-    //     if (SearchPokemonBFS(FindOwnerByName(owner2)->pokedexRoot, i) != NULL)
-    //         FindOwnerByName(owner1)->pokedexRoot = InsertPokemonNode(FindOwnerByName(owner1)->pokedexRoot,
-    //             SearchPokemonBFS(FindOwnerByName(owner2)->pokedexRoot, i)->data->id, 0);
-    // }//i have no idea how to optimise this shit
+    //i have no idea how to optimise this shit
+    FindOwnerByName(owner1)->pokedexRoot = MergeTrees(FindOwnerByName(owner1)->pokedexRoot, FindOwnerByName(owner2)->pokedexRoot);
     printf("Merge completed.\n");
     FreeOwnerNode(FindOwnerByName(owner2));
     printf("Owner '%s' has been removed after merging.", owner2);
+    free(owner1);
+    free(owner2);
 }
 
 PokemonNode *MergeTrees(PokemonNode *root1, PokemonNode *root2) {
-    //need to traverse in queue with bfs and inseart into tree
-    if (root1 == NULL)
+    //need to traverse in queue with bfs and insert into tree
+    if (root2 == NULL)
         return NULL;
     Queue *queue = CreateQueue();//creating queue
-    Enqueue(queue, root1);//adding root to queue
+    Enqueue(queue, root2);//adding root of the second one to queue
     while (queue->front != NULL) {
-        root2 = InsertPokemonNode(root1, root1->data->id, 0);
         PokemonNode *node = Dequeue(queue); //deleting from queue
+        root1 = InsertPokemonNode(root1, node->data->id, 1);//inserting first element into queue
         if (node->left != NULL)
             Enqueue(queue, node->left);
         if (node->right != NULL)
             Enqueue(queue, node->right);
     }
     free(queue);
+    return root1;
 }
 
 OwnerNode *FindOwnerByName(const char *name) {
@@ -982,3 +982,42 @@ OwnerNode *FindOwnerByName(const char *name) {
     return NULL;
 }
 
+void SortOwners(void) {//i'm guessing i need to put list in the array dymanically allocated and do the same quicksort
+    if (ownerHead == NULL) { //i need to do array from the data in the list
+        printf("No existing owners.\n");
+        return;
+    }
+    char **ownerNames = NULL;
+    int size = 0;
+    InitOwnerArray(ownerHead, ownerNames, &size);
+    //i really don't want to rewrite quicksort maybe later i can make it generic but for now i'll do qsort
+    qsort(ownerNames, size, sizeof(char *), CompareByNameOwners);
+}
+
+void InitOwnerArray(OwnerNode *owner, char **ownerNames, int *size) { //array of owner names i hope
+    int capacity = 10;
+    ownerNames = malloc(sizeof(char *) * capacity);
+    if (ownerNames == NULL) {
+        printf("Memory allocation error.\n");
+        exit(1);
+    }
+    while (owner != NULL) {
+        ownerNames[*size] = owner->ownerName;
+        *size++;
+        owner = owner->next;
+        if (*size > capacity) {
+            capacity *= 2;
+            ownerNames = realloc(ownerNames, sizeof(char *) * capacity);
+            if (ownerNames == NULL) {
+                printf("Memory allocation error.\n");
+                exit(1);
+            }
+        }
+    }
+}
+
+int CompareByNameOwners(const void *a, const void *b) {
+    char *name1 = *(char **)a;
+    char *name2 = *(char **)b;
+    return strcmp(name1, name2);
+}
