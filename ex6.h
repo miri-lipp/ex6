@@ -405,7 +405,7 @@ void SwapOwnerData(OwnerNode *a, OwnerNode *b); //for sorting list
  * @param newOwner pointer to newly created OwnerNode
  * Why we made it: We need a standard approach to keep the list circular.
  */
-void LinkOwnerInCircularList(OwnerNode *owner, PokemonNode *node);
+void LinkOwnerInCircularList(OwnerNode *owner);
 
 /**
  * @brief Remove a specific OwnerNode from the circular list, possibly updating head.

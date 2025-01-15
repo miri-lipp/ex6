@@ -1071,7 +1071,7 @@ void PrintOwnersCircular(void) {
     if (direction == 'F' || direction == 'f') {
         for (int i = 0; i < num; i++) {
             printf("[%d] ", i + 1);
-            //LinkOwnerInCircularList(owner);
+            LinkOwnerInCircularList(owner);
             printf("%s\n", owner->ownerName);
             owner = owner->next;
         }
@@ -1080,16 +1080,22 @@ void PrintOwnersCircular(void) {
         for (int i = 0; i < num; i++) {
             printf("[%d] ", i + 1);
             owner = owner->prev;
-            //LinkOwnerInCircularList(owner);
+            LinkOwnerInCircularList(owner);
             printf("%s\n", owner->ownerName);
         }
     }
 }
 
-void LinkOwnerInCircularList(OwnerNode *owner, PokemonNode *node) {
+void LinkOwnerInCircularList(OwnerNode *owner) {
     if (owner->next == NULL) { //if next owner is null the start from the first
         owner->next = ownerHead; //fuck
     }
+    //loop
+    //while (ptr = ..->next != NULL)
+    //ownertail = ptr
+    //ownertail->next = ownerhead
+    //ownerhead->prev = ownertail
+
     if (owner->prev == NULL) { //if previous owner is null then start from the last one again
         owner->prev = owner;
     }
