@@ -412,7 +412,7 @@ void LinkOwnerInCircularList(OwnerNode *owner, PokemonNode *node);
  * @param target pointer to the OwnerNode
  * Why we made it: Deleting or merging owners requires removing them from the ring.
  */
-//void RemoveOwnerFromCircularList(OwnerNode *target); //why did you male two of the same functions?????
+void RemoveOwnerFromCircularList(OwnerNode *target);
 
 /**
  * @brief Find an owner by name in the circular list.
@@ -420,7 +420,7 @@ void LinkOwnerInCircularList(OwnerNode *owner, PokemonNode *node);
  * @return pointer to the matching OwnerNode or NULL
  * Why we made it: We often need to locate an owner quickly.
  */
-OwnerNode *FindOwnerByName(const char *name); //this i def need for merging
+OwnerNode *FindOwnerByName(const char *name);
 
 /* ------------------------------------------------------------
    10) Owner Menus

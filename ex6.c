@@ -393,7 +393,7 @@ void AddOwner(OwnerNode *owner, PokemonNode *node) {//same thing but when linked
         owner->prev = current; //previous becomes current
         owner->pokedexRoot = StarterPokemon(node); //initializing binqry tree. i hope
         printf("New Pokedex created for %s with starter %s.\n",owner->ownerName, owner->pokedexRoot->data->name);
-}
+} //make adding to list if there is no same owners
 
 PokemonNode *StarterPokemon(PokemonNode *node) {
     int choice;
@@ -1050,18 +1050,51 @@ int CompareByNameOwners(const void *a, const void *b) {
 }
 
 void PrintOwnersCircular(void) {
+    OwnerNode *owner = ownerHead;
     printf("Enter direction (F or B):\n");
     char direction;
-    scanf(" %c", &direction);
-    if (direction != 'F' || direction != 'B' || direction != 'f' || direction != 'b') {
-        printf("Invalid direction.\n");
-        return;
-    }
+    scanf("%c", &direction);
+    // if (direction != 'F' || direction != 'B' || direction != 'f' || direction != 'b') {
+    //     printf("Invalid direction.\n");
+    //     return;
+    // }
     printf("How many prints?\n");
     int num = readIntSafe("");
-
+    if (num <= 0) {
+        printf("Invalid number.\n");
+        return;
+    }
+    if (owner == NULL) {
+        printf("No existing owners.\n");
+        return;
+    }
+    if (direction == 'F' || direction == 'f') {
+        for (int i = 0; i < num; i++) {
+            printf("[%d] ", i + 1);
+            //LinkOwnerInCircularList(owner);
+            printf("%s\n", owner->ownerName);
+            owner = owner->next;
+        }
+    }
+    else {
+        for (int i = 0; i < num; i++) {
+            printf("[%d] ", i + 1);
+            owner = owner->prev;
+            //LinkOwnerInCircularList(owner);
+            printf("%s\n", owner->ownerName);
+        }
+    }
 }
 
 void LinkOwnerInCircularList(OwnerNode *owner, PokemonNode *node) {
+    if (owner->next == NULL) { //if next owner is null the start from the first
+        owner->next = ownerHead; //fuck
+    }
+    if (owner->prev == NULL) { //if previous owner is null then start from the last one again
+        owner->prev = owner;
+    }
+}
+
+void RemoveOwnerFromCircularList(OwnerNode *target) {
 
 }
