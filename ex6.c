@@ -401,7 +401,6 @@ void AddOwner(OwnerNode *owner, PokemonNode *node) {//same thing but when linked
     owner->next = ownerHead; //next becomes pointer to the first one
     current->next = owner; //next to current becomes pointer to the current one
     ownerHead->prev = owner; //previous to the pointer to head becomes pointer to the added owner
-    ownerTail = owner; // new node is the last one
     owner->pokedexRoot = StarterPokemon(node); //initializing binqry tree. i hope
     printf("New Pokedex created for %s with starter %s.\n",owner->ownerName, owner->pokedexRoot->data->name);
 } //make adding to list if there is no same owners
@@ -782,8 +781,8 @@ void FreeOwnerNode(OwnerNode *owner) { //how am i contring if the owner in the m
         ownerHead = ownerHead->next;
         ownerHead->prev = ownerTail;
         ownerTail->next = ownerHead;
-        // printf("Updated ownerHead: %s\n", ownerHead->ownerName);
-        // printf("Updated ownerTail: %s\n", ownerTail->ownerName);
+         printf("Updated ownerHead: %s\n", ownerHead->ownerName);
+         printf("Updated ownerTail: %s\n", ownerTail->ownerName);
         FreePokemonTree(owner->pokedexRoot);
         free(owner->ownerName);
         free(owner);
@@ -1110,6 +1109,7 @@ void FreeAllOwners(void) {
     }
     OwnerNode *owner = ownerHead;
     while (ownerHead != NULL) {
+        //printf("freeing: %s\n", owner->ownerName);
         FreeOwnerNode(owner);
         owner = owner->next;
     }
