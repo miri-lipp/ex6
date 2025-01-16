@@ -1109,7 +1109,7 @@ void FreeAllOwners(void) {
         return;
     }
     OwnerNode *owner = ownerHead;
-    while (owner != NULL) {
+    while (ownerHead != NULL) {
         FreeOwnerNode(owner);
         owner = owner->next;
     }
