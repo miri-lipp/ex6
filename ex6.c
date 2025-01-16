@@ -883,7 +883,7 @@ void PokemonFight(OwnerNode *owner) {
     id1 = readIntSafe("");
     printf("Enter ID of the second Pokemon: \n");
     id2 = readIntSafe("");
-    if ((id1 || id2) < 1 || (id1 || id2) > 151) {
+    if (id1 < 1 || id2 < 1 || id1 > 151 || id2 > 151) {
         printf("Invalid ID.\n");
         return;
     }
