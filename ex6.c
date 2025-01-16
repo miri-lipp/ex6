@@ -398,7 +398,7 @@ void AddOwner(OwnerNode *owner, PokemonNode *node) {//same thing but when linked
     while (current->next != ownerTail)
         current = current->next;
     owner->prev = current; //previous becomes current
-    owner->next = ownerHead; //next becomes pointer to the first one
+    owner->next = ownerTail; //next becomes pointer to the first one
     current->next = owner; //next to current becomes pointer to the current one
     ownerHead->prev = owner; //previous to the pointer to head becomes pointer to the added owner
     owner->pokedexRoot = StarterPokemon(node); //initializing binqry tree. i hope
@@ -774,12 +774,12 @@ void FreeOwnerNode(OwnerNode *owner) { //how am i contring if the owner in the m
     if (owner == NULL)
         return;
     if (owner == ownerHead) { //if deleteing from start of the list
-        if (ownerTail == ownerHead) {
+        if (owner->next == ownerHead) {
             FreeHead(owner);
             return;
         }
         ownerHead = ownerHead->next;
-        ownerHead->prev = ownerTail;
+        ownerTail = ownerHead->prev;
         ownerTail->next = ownerHead;
          printf("Updated ownerHead: %s\n", ownerHead->ownerName);
          printf("Updated ownerTail: %s\n", ownerTail->ownerName);
