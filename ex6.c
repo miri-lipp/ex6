@@ -616,15 +616,17 @@ int Partition(NodeArray *pokemons, int low, int high) {
             j--; //compare node j and last element till j larger then 2 el in array
         }
         if (i < j) {
-            Swap(pokemons->nodes[i], pokemons->nodes[j]);
+            //printf("Swapping %s and %s\n", pokemons->nodes[i]->data->name, pokemons->nodes[j]->data->name);
+            Swap(&pokemons->nodes[i], &pokemons->nodes[j]);
         }
     }
-    Swap(pokemons->nodes[low], pokemons->nodes[j]);
+    //printf("Swapping %s and %s\n", pokemons->nodes[low]->data->name, pokemons->nodes[j]->data->name);
+    Swap(&pokemons->nodes[low], &pokemons->nodes[j]);
     return j;
 }
 
-void Swap(PokemonNode *a, PokemonNode *b) {
-    PokemonNode temp = *a;
+void Swap(PokemonNode **a, PokemonNode **b) {
+    PokemonNode *temp = *a;
     *a = *b;
     *b = temp;
 }
