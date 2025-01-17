@@ -355,56 +355,56 @@ int main()
 }
 
 void OpenPokedexMenu(void) {
+    printf("Your name:\n");
+    char *name = getDynamicInput();
+    if (ownerHead == NULL) {
+        //add data to root of binary tree
+        //HOW? i have an array of pokemon data so i need to add pokemondata[] to data struct.
+        ownerHead = CreateOwnerNode(name);
+        printf("New Pokedex created for %s with starter %s.\n",ownerHead->ownerName, ownerHead->pokedexRoot->data->name);
+    }
+    else { //same thing but when linked list is not empty
+        AddOwner(name);
+    }
+    free(name);
+}
+
+OwnerNode *CreateOwnerNode(char *ownerName) {
     OwnerNode *owner = (OwnerNode *)malloc(sizeof(OwnerNode));
-    PokemonNode *node = (PokemonNode *)malloc(sizeof(PokemonNode));
     if (owner == NULL) {
         printf("Memory allocation failed.\n");
         exit(1);
     }
-    if (node == NULL) {
-        printf("Memory allocation failed.\n");
-        exit(1);
-    }
-    printf("Your name:\n");
-    if (ownerHead == NULL) {
-        ownerHead = owner; //if head of the linked list is null then the linked list is empty
-        owner->next = owner;
-        owner->prev = owner;
-        owner->ownerName = getDynamicInput();
-        //add data to root of binary tree
-        //HOW? i have an array of pokemon data so i need to add pokemondata[] to data struct. da fuck?
-        owner->pokedexRoot = StarterPokemon(node);
-        printf("New Pokedex created for %s with starter %s.\n",owner->ownerName, owner->pokedexRoot->data->name);
-    }
-    else { //same thing but when linked list is not empty
-        AddOwner(owner, node);
-    }
+    owner->next = owner;
+    owner->prev = owner;
+    owner->ownerName = myStrdup(ownerName);
+    owner->pokedexRoot = StarterPokemon();
+    return owner;
 }
 
-void AddOwner(OwnerNode *owner, PokemonNode *node) {//same thing but when linked list is not empty
+void AddOwner(char *ownerName) {//same thing but when linked list is not empty
     OwnerNode *current = ownerHead;
-    owner->ownerName = getDynamicInput();
         //going to the end of linked list
     do {
-        if (strcmp(owner->ownerName, current->ownerName) == 0) {
+        if (strcmp(ownerName, current->ownerName) == 0) {
             printf("Owner already added.\n");
-            free(owner->ownerName);
+            free(ownerName);
             return;
         }
         current = current->next;
     } while (current != ownerHead);
+    OwnerNode *owner = CreateOwnerNode(ownerName);
     current = ownerHead;
-    while (current->next != ownerHead)
-        current = current->next; //find the last one in the list
-    owner->prev = current; //previous becomes current
-    owner->next = ownerHead; //next becomes pointer to the first one
-    current->next = owner; //next to current becomes pointer to the current one
-    ownerHead->prev = owner; //previous to the pointer to head becomes pointer to the added owner
-    owner->pokedexRoot = StarterPokemon(node); //initializing binary tree. i hope
+     while (current->next != ownerHead)
+         current = current->next; //find the last one in the list
+     owner->prev = current; //previous becomes current
+     owner->next = ownerHead; //next becomes pointer to the first one
+     current->next = owner; //next to current becomes pointer to the current one
+     ownerHead->prev = owner; //previous to the pointer to head becomes pointer to the added owner
     printf("New Pokedex created for %s with starter %s.\n",owner->ownerName, owner->pokedexRoot->data->name);
 } //make adding to list if there is no same owners
 
-PokemonNode *StarterPokemon(PokemonNode *node) {
+PokemonNode *StarterPokemon() {
     int choice;
     printf("Choose Starter:\n\
                 1. Bulbasaur\n\
@@ -423,7 +423,7 @@ PokemonNode *StarterPokemon(PokemonNode *node) {
         }
         default:
             printf("Invalid choice.\n");
-            return StarterPokemon(node);
+            return StarterPokemon();
     } //recursion supremacy
 }
 

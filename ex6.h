@@ -120,15 +120,14 @@ const char *getTypeName(PokemonType type);
 /* ------------------------------------------------------------
    2) Creating & Freeing Nodes
    ------------------------------------------------------------ */
-
+OwnerNode *CreateOwnerNode(char *ownerName);
 /**
  * @brief Create a BST node with a copy of the given PokemonData.
  * @param data pointer to PokemonData (like from the global pokedex)
  * @return newly allocated PokemonNode*
  * Why we made it: We need a standard way to allocate BST nodes.
  */
-PokemonNode *CreatePokemonNode(const PokemonData *data); //i actually accidentally wrote one function for this two
-//maybe when i will optimise my code i will make it into two
+PokemonNode *CreatePokemonNode(const PokemonData *data);
 /**
  * @brief Create an OwnerNode for the circular owners list.
  * @param ownerName the dynamically allocated name
@@ -136,8 +135,7 @@ PokemonNode *CreatePokemonNode(const PokemonData *data); //i actually accidental
  * @return newly allocated OwnerNode*
  * Why we made it: Each user is represented as an OwnerNode.
  */
-//OwnerNode *createOwner(char *ownerName);
-void AddOwner(OwnerNode *owner, PokemonNode *node);
+void AddOwner(char *ownerName);
 /**
  * @brief Free one PokemonNode (including name).
  * @param node pointer to node
@@ -431,7 +429,7 @@ OwnerNode *FindOwnerByName(const char *name);
  * Why we made it: This is the main interface for adding/fighting/evolving, etc.
  */
 
-PokemonNode *StarterPokemon(PokemonNode *node);
+PokemonNode *StarterPokemon();
 void EnterExistingPokedexMenu(void);
 OwnerNode *ListLookUp(int choice);
 PokemonNode *MergeTrees(PokemonNode *root1, PokemonNode *root2);
