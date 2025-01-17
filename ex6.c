@@ -239,11 +239,11 @@ void DisplayMenu(OwnerNode *owner)
 void EnterExistingPokedexMenu()
 {
     // list owners
-    printf("\nExisting Pokedexes:\n");
     if (ownerHead == NULL) {
         printf("No existing Pokedexes.\n");
         return;
     }
+    printf("\nExisting Pokedexes:\n");
     int count = 1;
     int choice;
     OwnerNode *node = ownerHead;//first one in the list
@@ -355,7 +355,7 @@ int main()
 }
 
 void OpenPokedexMenu(void) {
-    printf("Your name:");
+    printf("Your name: ");
     char *name = getDynamicInput();
     if (ownerHead == NULL) {
         //add data to root of binary tree
@@ -448,7 +448,7 @@ OwnerNode *ListLookUp(int choice) { //looking for a specific person in list and 
 
 void AddPokemon(OwnerNode *owner) {
     int pokemonId;
-    printf("Enter ID to add:");
+    printf("Enter ID to add: ");
     pokemonId = readIntSafe("");
     if (pokemonId < 1|| pokemonId > 151) {
         printf("Invalid ID.\n");
@@ -704,7 +704,7 @@ void FreePokemon(OwnerNode *owner) {
         printf("No Pokemon to release.\n");
         return;
     }
-    printf("Enter Pokemon ID to release:");
+    printf("Enter Pokemon ID to release: ");
     pokemonId = readIntSafe("");
     if (pokemonId <= 0 || pokemonId > 151) {
         printf("Invalid choice.\n");
@@ -818,11 +818,11 @@ void FreeHead() {
 }
 
 void DeletePokedex(void) {
-    printf("\n=== Delete a Pokedex ===\n");
     if (ownerHead == NULL) {
-        printf("No existing Pokedexes.\n");
+        printf("No existing Pokedexes to delete.\n");
         return;
     }
+    printf("\n=== Delete a Pokedex ===\n");
     int count = 1;
     int choice;
     OwnerNode *node = ownerHead;//first one in the list
@@ -933,19 +933,19 @@ void EvolvePokemon(OwnerNode *owner) {
 
 void MergePokedexMenu(void) {
     OwnerNode *node = ownerHead;//first one in the list
-    printf("\n=== Merge Pokedexes ===\n");
     if (ownerHead == NULL) {
-        printf("No existing Pokedexes.\n");
+        printf("Not enough owners to merge.\n");
         return;
     }
     if (ownerHead == node->next) {
         printf("Not enough owners to merge.\n");
         return;
     }
+    printf("\n=== Merge Pokedexes ===\n");
     char *owner1, *owner2;
-    printf("Enter name of first owner: \n");
+    printf("Enter name of first owner: ");
     owner1 = getDynamicInput();
-    printf("Enter name of second owner: \n");
+    printf("Enter name of second owner: ");
     owner2 = getDynamicInput();
     if (FindOwnerByName(owner1)->pokedexRoot == NULL && FindOwnerByName(owner2)->pokedexRoot == NULL) {
         printf("Both Pokedexes empty. Nothing to merge.\n");
@@ -991,15 +991,19 @@ OwnerNode *FindOwnerByName(const char *name) {
 }
 
 void SortOwners(void) {//i'm guessing i need to put list in the array dymanically allocated and do the same quicksort
+    OwnerNode *owner = ownerHead;
     if (ownerHead == NULL) { //i need to do array from the data in the list
-        printf("No existing owners.\n");
+        printf("0 or 1 owners only => no need to sort.\n");
+        return;
+    }
+    if (ownerHead == owner->next) {
+        printf("0 or 1 owners only => no need to sort.\n");
         return;
     }
     int size = 0;
     ownerNames = InitOwnerArray(ownerHead, &size);
     //i will scream i swear i will
     BubbleSort(ownerNames, &size); //putting everything back in the list?
-    OwnerNode *owner = ownerHead;
     for (int i = 0; i < size; i++) {
         owner->ownerName = ownerNames[i]->ownerName;
         owner->pokedexRoot = ownerNames[i]->pokedexRoot;
@@ -1060,7 +1064,7 @@ int CompareByNameOwners(const void *a, const void *b) {
 void PrintOwnersCircular(void) {
     OwnerNode *owner = ownerHead;
     if (owner == NULL) {
-        printf("No existing owners.\n");
+        printf("No owners.\n");
         return;
     }
     char direction;
@@ -1076,7 +1080,7 @@ void PrintOwnersCircular(void) {
     scanf("%*c");
     printf("How many prints?");
     int num;
-    num = readIntSafe("");
+    num = readIntSafe("\n");
     if (num < 0) {
         printf("Invalid number.\n");
         return;
