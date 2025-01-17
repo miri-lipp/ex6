@@ -1093,11 +1093,14 @@ void PrintOwnersCircular(void) {
         }
     }
     else {
-        owner = owner->prev; //going to tail of the list
+        do {
+            owner = owner->next;
+        } while(owner->next != ownerHead); //going to tail of the list
+        OwnerNode *temp = owner;
         for (int i = 0; i < num; i++) {
             printf("[%d] ", i + 1);
-            printf("%s\n", owner->ownerName);
-            owner = owner->prev;
+            printf("%s\n", temp->ownerName);
+            temp = temp->prev;
         }
     }
 }
