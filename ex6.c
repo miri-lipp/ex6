@@ -1096,8 +1096,8 @@ void PrintOwnersCircular(void) {
         owner = owner->prev; //going to tail of the list
         for (int i = 0; i < num; i++) {
             printf("[%d] ", i + 1);
-            owner = owner->prev;
             printf("%s\n", owner->ownerName);
+            owner = owner->prev;
         }
     }
 }
