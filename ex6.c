@@ -385,14 +385,10 @@ OwnerNode *CreateOwnerNode(char *ownerName) {
 void AddOwner(char *ownerName) {//same thing but when linked list is not empty
     OwnerNode *current = ownerHead;
         //going to the end of linked list
-    do {
-        if (strcmp(ownerName, current->ownerName) == 0) {
-            printf("Owner already added.\n");
-            free(ownerName);
-            return;
-        }
-        current = current->next;
-    } while (current != ownerHead);
+    if (FindOwnerByName(ownerName) != NULL) {
+        printf("Owner '%s' already exists. Not creating a new Pokedex.\n", ownerName);
+        return;
+    }
     OwnerNode *owner = CreateOwnerNode(ownerName);
     current = ownerHead;
      while (current->next != ownerHead)
@@ -782,8 +778,8 @@ void FreeOwnerNode(OwnerNode *owner) { //how am i contring if the owner in the m
         ownerTail->next = ownerHead->next; //next pointer to first becomes previous ownerhead
         ownerHead->next->prev = ownerTail; //previous pointer to owner head next is the last one
         ownerHead = ownerHead->next; //updating ownerhead
-         printf("Updated ownerHead: %s\n", ownerHead->ownerName);
-         printf("Updated ownerTail: %s\n", ownerTail->ownerName);
+         // printf("Updated ownerHead: %s\n", ownerHead->ownerName);
+         // printf("Updated ownerTail: %s\n", ownerTail->ownerName);
         FreePokemonTree(owner->pokedexRoot);
         free(owner->ownerName);
         free(owner);
@@ -883,7 +879,7 @@ void PokemonFight(OwnerNode *owner) {
     printf("Enter ID of the second Pokemon: \n");
     id2 = readIntSafe("");
     if (id1 < 1 || id2 < 1 || id1 > 151 || id2 > 151) {
-        printf("Invalid ID.\n");
+        printf("One or both Pokemon IDs not found.\n");
         return;
     }
     if (SearchPokemonBFS(owner->pokedexRoot, id1) == NULL || SearchPokemonBFS(owner->pokedexRoot, id2) == NULL) {
@@ -914,18 +910,18 @@ void EvolvePokemon(OwnerNode *owner) {
     printf("Enter ID of Pokemon to evolve: \n");
     id = readIntSafe("");
     if (id < 1 || id > 151) { //id out of bounds
-        printf("Invalid ID.\n");
+        printf("No pokemon with ID %d found.\n", id);
         return;
     }
     if (SearchPokemonBFS(owner->pokedexRoot, id) == NULL) { //there is no pokemon in pokedex
-        printf("Pokemon ID not found.\n");
+        printf("No pokemon with ID %d found.\n", id);
         return;
     }
     if (SearchPokemonBFS(owner->pokedexRoot, id)->data->CAN_EVOLVE == CANNOT_EVOLVE) {//pokemon cannot evolve
-        printf("Pokemon cannot evolve.\n");
+        printf("%s (ID %d) cannot evolve.\n", SearchPokemonBFS(owner->pokedexRoot, id)->data->name, id);
         return;
     }
-    else if (SearchPokemonBFS(owner->pokedexRoot, id)->data->CAN_EVOLVE == CAN_EVOLVE) { //pokemon can evolve
+    if (SearchPokemonBFS(owner->pokedexRoot, id)->data->CAN_EVOLVE == CAN_EVOLVE) { //pokemon can evolve
         printf("Pokemon evolved from %s (ID %d) to %s (ID %d)\n", SearchPokemonBFS(owner->pokedexRoot, id)->data->name, id,
                                                                 pokedex[id].name, id + 1);
         owner->pokedexRoot = ReleasePokemon(owner->pokedexRoot, SearchPokemonBFS(owner->pokedexRoot, id)->data); //case where evolving happens
@@ -955,8 +951,8 @@ void MergePokedexMenu(void) {
     owner1 = getDynamicInput();
     printf("Enter name of second owner: \n");
     owner2 = getDynamicInput();
-    if (FindOwnerByName(owner1)->pokedexRoot == NULL || FindOwnerByName(owner2)->pokedexRoot == NULL) {
-        printf("Pokedex is empty.\n");
+    if (FindOwnerByName(owner1)->pokedexRoot == NULL && FindOwnerByName(owner2)->pokedexRoot == NULL) {
+        printf("Both Pokedexes empty. Nothing to merge.\n");
     }
     printf("Merging %s and %s...\n", FindOwnerByName(owner1)->ownerName, FindOwnerByName(owner2)->ownerName);
     //i need to add all of the stuff from the second one and if it exists then it wouldn't be added
@@ -973,7 +969,7 @@ void MergePokedexMenu(void) {
 PokemonNode *MergeTrees(PokemonNode *root1, PokemonNode *root2) {
     //need to traverse in queue with bfs and insert into tree
     if (root2 == NULL)
-        return NULL;
+        return root1;
     Queue *queue = CreateQueue();//creating queue
     Enqueue(queue, root2);//adding root of the second one to queue
     while (queue->front != NULL) {
@@ -1067,12 +1063,19 @@ int CompareByNameOwners(const void *a, const void *b) {
 
 void PrintOwnersCircular(void) {
     OwnerNode *owner = ownerHead;
-    printf("Enter direction (F or B):\n");
-    char direction;
-    scanf(" %c", &direction);
-    if (direction != 'F' && direction != 'B' && direction != 'f' && direction != 'b') {
-        printf("Invalid direction.\n");
+    if (owner == NULL) {
+        printf("No existing owners.\n");
         return;
+    }
+    char direction;
+    while (1) {
+        printf("Enter direction (F or B):\n");
+        scanf(" %c", &direction);
+        if (direction != 'F' && direction != 'B' && direction != 'f' && direction != 'b') {
+            printf("Invalid direction, must be F or B.\n");
+        }
+        else
+            break;
     }
     scanf("%*c");
     printf("How many prints?\n");
@@ -1080,10 +1083,6 @@ void PrintOwnersCircular(void) {
     num = readIntSafe("");
     if (num < 0) {
         printf("Invalid number.\n");
-        return;
-    }
-    if (owner == NULL) {
-        printf("No existing owners.\n");
         return;
     }
     if (direction == 'F' || direction == 'f') {
