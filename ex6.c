@@ -778,11 +778,10 @@ void FreeOwnerNode(OwnerNode *owner) { //how am i contring if the owner in the m
             FreeHead(owner); //if the only one
             return;
         }
-        ownerTail = ownerHead->next; //first one becomes next
-        ownerTail->next = ownerHead->prev; //next pointer to first becomes previous ownerhead
-        ownerHead->prev->next = ownerTail; //previous pointer to owner head next (the last one in list becomes pointer to first one)
+        ownerTail = ownerHead->prev; //first one becomes next
+        ownerTail->next = ownerHead->next; //next pointer to first becomes previous ownerhead
+        ownerHead->next->prev = ownerTail; //previous pointer to owner head next is the last one
         ownerHead = ownerHead->next; //updating ownerhead
-        ownerHead = ownerTail;
          // printf("Updated ownerHead: %s\n", ownerHead->ownerName);
          // printf("Updated ownerTail: %s\n", ownerTail->ownerName);
         FreePokemonTree(owner->pokedexRoot);
