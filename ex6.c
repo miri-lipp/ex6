@@ -251,7 +251,7 @@ void EnterExistingPokedexMenu()
         printf("%d. %s\n", count, node->ownerName);
         node = node->next; //next one
         count++;
-    } while (node->next != ownerTail);
+    } while (node != ownerHead);
     printf("Choose a Pokedex by number: \n");
     choice = readIntSafe("");
     while (choice > count - 1 || choice < 1) {
@@ -368,7 +368,6 @@ void OpenPokedexMenu(void) {
     printf("Your name:\n");
     if (ownerHead == NULL) {
         ownerHead = owner; //if head of the linked list is null then the linked list is empty
-        ownerTail = owner;
         owner->next = owner;
         owner->prev = owner;
         owner->ownerName = getDynamicInput();
@@ -393,15 +392,15 @@ void AddOwner(OwnerNode *owner, PokemonNode *node) {//same thing but when linked
             return;
         }
         current = current->next;
-    } while (current != ownerTail);
+    } while (current != ownerHead);
     current = ownerHead;
-    while (current->next != ownerTail)
-        current = current->next;
+    while (current->next != ownerHead)
+        current = current->next; //find the last one in the list
     owner->prev = current; //previous becomes current
-    owner->next = ownerTail; //next becomes pointer to the first one
+    owner->next = ownerHead; //next becomes pointer to the first one
     current->next = owner; //next to current becomes pointer to the current one
     ownerHead->prev = owner; //previous to the pointer to head becomes pointer to the added owner
-    owner->pokedexRoot = StarterPokemon(node); //initializing binqry tree. i hope
+    owner->pokedexRoot = StarterPokemon(node); //initializing binary tree. i hope
     printf("New Pokedex created for %s with starter %s.\n",owner->ownerName, owner->pokedexRoot->data->name);
 } //make adding to list if there is no same owners
 
@@ -447,7 +446,7 @@ OwnerNode *ListLookUp(int choice) { //looking for a specific person in list and 
             break;
         current = current->next;
         count++;
-    } while (current->next != ownerTail);
+    } while (current->next != ownerHead);
     return current;
 }
 
@@ -653,7 +652,7 @@ void InitNodeArray(NodeArray *na, int cap) {
 }
 
 void FreeNodeArray(NodeArray *na) {
-    printf("Freeing NodeArray with size: %d and capacity: %d\n", na->size, na->capacity);
+    //printf("Freeing NodeArray with size: %d and capacity: %d\n", na->size, na->capacity);
     free(na->nodes);
     na->nodes = NULL;
     na->size = 0;
@@ -771,18 +770,21 @@ void FreePokemonTree(PokemonNode *root) {
 }
 
 void FreeOwnerNode(OwnerNode *owner) { //how am i contring if the owner in the middle of the list?
+    OwnerNode *ownerTail = ownerHead; //made two pointers for the same one just for easier logic and reading
     if (owner == NULL)
         return;
     if (owner == ownerHead) { //if deleteing from start of the list
         if (owner->next == ownerHead) {
-            FreeHead(owner);
+            FreeHead(owner); //if the only one
             return;
         }
-        ownerHead = ownerHead->next;
-        ownerTail = ownerHead->prev;
-        ownerTail->next = ownerHead;
-         printf("Updated ownerHead: %s\n", ownerHead->ownerName);
-         printf("Updated ownerTail: %s\n", ownerTail->ownerName);
+        ownerTail = ownerHead->next; //first one becomes next
+        ownerTail->next = ownerHead->prev; //next pointer to first becomes previous ownerhead
+        ownerHead->prev->next = ownerTail; //previous pointer to owner head next (the last one in list becomes pointer to first one)
+        ownerHead = ownerHead->next; //updating ownerhead
+        ownerHead = ownerTail;
+         // printf("Updated ownerHead: %s\n", ownerHead->ownerName);
+         // printf("Updated ownerTail: %s\n", ownerTail->ownerName);
         FreePokemonTree(owner->pokedexRoot);
         free(owner->ownerName);
         free(owner);
@@ -816,7 +818,6 @@ void FreeHead() {
     free(ownerHead->ownerName);
     free(ownerHead);
     ownerHead = NULL;
-    ownerTail = NULL;
 }
 
 void DeletePokedex(void) {
@@ -832,7 +833,7 @@ void DeletePokedex(void) {
         printf("%d. %s\n", count, node->ownerName);
         node = node->next; //next one
         count++;
-    } while (node->next != ownerTail);
+    } while (node != ownerHead);
     printf("Choose a Pokedex to delete by number: \n");
     choice = readIntSafe("");
     while (choice > count - 1 || choice < 1) {
@@ -934,23 +935,23 @@ void EvolvePokemon(OwnerNode *owner) {
 }
 
 void MergePokedexMenu(void) {
+    OwnerNode *node = ownerHead;//first one in the list
     printf("\n=== Merge Pokedexes ===\n");
     if (ownerHead == NULL) {
         printf("No existing Pokedexes.\n");
         return;
     }
-    if (ownerHead == ownerTail) {
+    if (ownerHead == node->next) {
         printf("Not enough owners to merge.\n");
         return;
     }
     int count = 1;
     char *owner1, *owner2;
-    OwnerNode *node = ownerHead;//first one in the list
     do{ //while the node is not first one
         printf("%d. %s\n", count, node->ownerName);
         node = node->next; //next one
         count++;
-    } while (node->next != ownerTail);
+    } while (node != ownerHead);
     printf("Enter name of first owner: \n");
     owner1 = getDynamicInput();
     printf("Enter name of second owner: \n");
@@ -994,7 +995,7 @@ OwnerNode *FindOwnerByName(const char *name) {
         if (strcmp(owner->ownerName, name) == 0)
             return owner;
         owner = owner->next;
-    } while (owner->next != ownerTail);
+    } while (owner != ownerHead);
     return NULL;
 }
 
@@ -1036,7 +1037,7 @@ OwnerNode** InitOwnerArray(OwnerNode *owner, int *size) { //array of owner names
         ownerNames[*size] = owner;
         (*size)++;
         owner = owner->next;
-    } while (owner->next != ownerTail);
+    } while (owner->next != ownerHead);
     return ownerNames;
 }
 
@@ -1094,7 +1095,6 @@ void PrintOwnersCircular(void) {
         }
     }
     else {
-        owner = ownerTail;
         for (int i = 0; i < num; i++) {
             printf("[%d] ", i + 1);
             owner = owner->prev;
@@ -1109,7 +1109,7 @@ void FreeAllOwners(void) {
     }
     OwnerNode *owner = ownerHead;
     while (ownerHead != NULL) {
-        //printf("freeing: %s\n", owner->ownerName);
+        printf("freeing: %s\n", owner->ownerName);
         FreeOwnerNode(owner);
         owner = owner->next;
     }

@@ -61,7 +61,6 @@ typedef struct OwnerNode
 
 // Global head pointer for the linked list of owners
 OwnerNode *ownerHead = NULL;
-OwnerNode *ownerTail = NULL;
 OwnerNode **ownerNames = NULL; //global pointer to array from struct because it told me that i have memory leaked if i did it directly from function
 
 typedef struct QueueNode //structy for storing pointers to tree
