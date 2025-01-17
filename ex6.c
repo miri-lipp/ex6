@@ -725,27 +725,27 @@ PokemonNode* ReleasePokemon(PokemonNode *root, PokemonData *data) {
         //printf("Going left: Current Node ID: %d\n", root->data->id);
         root->left = ReleasePokemon(root->left, data);
     }
-    if (data->id > root->data->id) {//going right
+    else if (data->id > root->data->id) {//going right
         //printf("Going right: Current Node ID: %d\n", root->data->id);
         root->right = ReleasePokemon(root->right, data);
     } //when the leaf is found
     else { //else if one child
-       // printf("Found Pokemon to delete: ID %d, Name: %s\n", root->data->id, root->data->name);
+        //printf("Found Pokemon to delete: ID %d, Name: %s\n", root->data->id, root->data->name);
         if (root->left == NULL) {//if there is only right node or 0
             PokemonNode *temp = root->right;
-            //printf("Node has no left child. Replacing with right child.\n");
+           // printf("Node has no left child. Replacing with right child.\n");
             free(root);
             return temp;
         }
         if (root->right == NULL) { //if only left node
             PokemonNode *temp = root->left;
-            //printf("Node has no right child. Replacing with left child.\n");
+           // printf("Node has no right child. Replacing with left child.\n");
             free(root);
             return temp;
         } //both present
         PokemonNode *temp = FindMax(root); //find maximum in bst
         // printf("Node has two children. Replacing with max from left subtree: ID %d, Name: %s\n",
-        //        temp->data->id, temp->data->name);
+         //      temp->data->id, temp->data->name);
         root->data = temp->data; //replace everything
         root->left = ReleasePokemon(root->left, temp->data);
     }
