@@ -1106,14 +1106,14 @@ void FreeAllOwners(void) {
     if (ownerHead == NULL) {
         return;
     }
-    OwnerNode *owner = ownerHead;
-    OwnerNode *temp;
+    OwnerNode *owner;
+    OwnerNode *current = ownerHead;
     do {
-        temp = owner->next;
-        FreePokemonTree(owner->pokedexRoot);
-        free(owner->ownerName);
-        free(owner);
-        owner = temp;
+        owner = current->next; //next owner
+        FreePokemonTree(current->pokedexRoot); //freeing tree
+        free(current->ownerName);//freeing name
+        free(current); //freeing pointer
+        current = owner;
     } while (owner != ownerHead);
     //printf("and we're golden\n");
     ownerHead = NULL;
