@@ -1078,7 +1078,7 @@ void PrintOwnersCircular(void) {
             break;
     }
     scanf("%*c");
-    printf("How many prints?");
+    printf("How many prints? ");
     int num;
     num = readIntSafe("");
     if (num < 0) {
