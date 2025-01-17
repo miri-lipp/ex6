@@ -714,7 +714,7 @@ void FreePokemon(OwnerNode *owner) {
         printf("No Pokemon with ID %d found.\n", pokemonId);
         return;
     }
-    printf("Removing Pokemon %s (ID %d)\n", SearchPokemonBFS(owner->pokedexRoot, pokemonId)->data->name, pokemonId);
+    printf("Removing Pokemon %s (ID %d).\n", SearchPokemonBFS(owner->pokedexRoot, pokemonId)->data->name, pokemonId);
     owner->pokedexRoot = ReleasePokemon(owner->pokedexRoot, SearchPokemonBFS(owner->pokedexRoot, pokemonId)->data);
 }
 
@@ -1080,7 +1080,7 @@ void PrintOwnersCircular(void) {
     scanf("%*c");
     printf("How many prints?");
     int num;
-    num = readIntSafe("\n");
+    num = readIntSafe("");
     if (num < 0) {
         printf("Invalid number.\n");
         return;
