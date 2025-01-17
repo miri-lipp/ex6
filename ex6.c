@@ -782,8 +782,8 @@ void FreeOwnerNode(OwnerNode *owner) { //how am i contring if the owner in the m
         ownerTail->next = ownerHead->next; //next pointer to first becomes previous ownerhead
         ownerHead->next->prev = ownerTail; //previous pointer to owner head next is the last one
         ownerHead = ownerHead->next; //updating ownerhead
-         // printf("Updated ownerHead: %s\n", ownerHead->ownerName);
-         // printf("Updated ownerTail: %s\n", ownerTail->ownerName);
+         printf("Updated ownerHead: %s\n", ownerHead->ownerName);
+         printf("Updated ownerTail: %s\n", ownerTail->ownerName);
         FreePokemonTree(owner->pokedexRoot);
         free(owner->ownerName);
         free(owner);
@@ -1107,10 +1107,14 @@ void FreeAllOwners(void) {
         return;
     }
     OwnerNode *owner = ownerHead;
-    while (ownerHead != NULL) {
-        printf("freeing: %s\n", owner->ownerName);
-        FreeOwnerNode(owner);
-        owner = owner->next;
-    }
+    OwnerNode *temp;
+    do {
+        temp = owner->next;
+        FreePokemonTree(owner->pokedexRoot);
+        free(owner->ownerName);
+        free(owner);
+        owner = temp;
+    } while (owner != ownerHead);
     //printf("and we're golden\n");
+    ownerHead = NULL;
 }
