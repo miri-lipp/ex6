@@ -1069,7 +1069,7 @@ void PrintOwnersCircular(void) {
     }
     char direction;
     while (1) {
-        printf("Enter direction (F or B):");
+        printf("Enter direction (F or B): ");
         scanf(" %c", &direction);
         if (direction != 'F' && direction != 'B' && direction != 'f' && direction != 'b') {
             printf("Invalid direction, must be F or B.");
@@ -1093,6 +1093,7 @@ void PrintOwnersCircular(void) {
         }
     }
     else {
+        owner = owner->prev; //going to tail of the list
         for (int i = 0; i < num; i++) {
             printf("[%d] ", i + 1);
             owner = owner->prev;
